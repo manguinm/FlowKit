@@ -2,13 +2,16 @@ import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
 import { isLoggedIn, logout } from "./util/api";
+import ErrorDialog from "./ErrorDialog";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       loggedIn: false,
-      is_admin: false
+      is_admin: false,
+      hasError: false,
+      error: { message: "" }
     };
   }
   setLoggedIn = (is_admin) => {
@@ -19,11 +22,16 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    logout();
-    this.setState({
-      loggedIn: false,
-      is_admin: false
-    });
+    if (error.status_code === 401) {
+      logout();
+      this.setState({
+        loggedIn: false,
+        is_admin: false
+      });
+    }
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error: error };
   }
   logout = async () => {
     logout();
@@ -45,10 +53,16 @@ class App extends Component {
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      return <Dashboard logout={this.logout} is_admin={is_admin} />;
+      var component = <Dashboard logout={this.logout} is_admin={is_admin} />;
     } else {
-      return <Login setLoggedIn={this.setLoggedIn} />;
+      var component = <Login setLoggedIn={this.setLoggedIn} />;
     }
+    return (
+      <React.Fragment>
+        {component}
+        <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
+      </React.Fragment>
+    );
   }
 }
 

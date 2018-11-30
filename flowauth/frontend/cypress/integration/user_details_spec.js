@@ -26,7 +26,7 @@ describe("User details screen", function () {
         cy.get("#username").type("TEST_USER");
         cy.get("#password").type("ANOTHER_DUMMY_PASSWORD");
         cy.get("button").click();
-        cy.contains("Aruba").should("exist");
+        cy.contains("My Servers");
     });
 
     it("Display error when old password is incorrect", function () {
