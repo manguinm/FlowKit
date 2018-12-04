@@ -17,7 +17,6 @@ import { withStyles } from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import { editPassword } from "./util/api";
-import ErrorDialog from "./ErrorDialog";
 import MessageSnackbar from "./MessageSnackbar";
 var zxcvbn = require("zxcvbn");
 
@@ -85,6 +84,8 @@ class UserDetails extends React.Component {
 	};
 
 	render() {
+		if (this.state.hasError) throw this.state.error;
+
 		const { classes } = this.props;
 		const {
 			oldPassword,
@@ -174,7 +175,6 @@ class UserDetails extends React.Component {
 						</form>
 					</Grid>
 				</Grid>
-				<ErrorDialog open={this.state.hasError} message={this.state.error.message} />
 				<MessageSnackbar
 					open={this.state.passwordChanged}
 					variant="success"

@@ -14,7 +14,6 @@ import Paper from "@material-ui/core/Paper";
 import Typography from "@material-ui/core/Typography";
 import withStyles from "@material-ui/core/styles/withStyles";
 import { login, isLoggedIn } from "./util/api";
-import ErrorDialog from "./ErrorDialog";
 
 const styles = theme => ({
   layout: {
@@ -94,6 +93,8 @@ class Login extends React.Component {
   render() {
     const { classes } = this.props;
 
+    if (this.state.hasError) throw this.state.error;
+
     return (
       <React.Fragment>
         <CssBaseline />
@@ -139,7 +140,6 @@ class Login extends React.Component {
             </form>
           </Paper>
         </main>
-        <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
       </React.Fragment>
     );
   }

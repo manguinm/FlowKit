@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import { logout } from "./util/api";
+import ErrorBoundary from "./ErrorBoundary";
 
 class App extends Component {
   constructor(props) {
@@ -19,10 +19,6 @@ class App extends Component {
       is_admin: is_admin
     });
   }
-  componentDidCatch(error, info) {
-    console.log(error);
-    logout().then(this.setLoggedOut());
-  }
   setLoggedOut = () => {
     this.setState({
       loggedIn: false,
@@ -34,15 +30,14 @@ class App extends Component {
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      var component = <Dashboard logout={this.setLoggedOut} is_admin={is_admin} />;
+      var component = <Dashboard setLoggedOut={this.setLoggedOut} is_admin={is_admin} />;
     } else {
       var component = <Login setLoggedIn={this.setLoggedIn} />;
     }
     return (
-      <React.Fragment>
+      <ErrorBoundary setLoggedOut={this.setLoggedOut} >
         {component}
-        <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
-      </React.Fragment>
+      </ErrorBoundary>
     );
   }
 }
