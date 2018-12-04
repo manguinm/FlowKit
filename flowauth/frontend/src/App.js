@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import { isLoggedIn, logout } from "./util/api";
-import ErrorDialog from "./ErrorDialog";
+import { logout } from "./util/api";
 
 class App extends Component {
   constructor(props) {
@@ -22,30 +21,12 @@ class App extends Component {
   }
   componentDidCatch(error, info) {
     console.log(error);
-    if (error.status_code === 401) {
-      logout();
-      this.setState({
-        loggedIn: false,
-        is_admin: false
-      });
-    }
+    logout().then(this.setLoggedOut());
   }
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error: error };
-  }
-  logout = async () => {
-    logout();
+  setLoggedOut = () => {
     this.setState({
       loggedIn: false,
       is_admin: false
-    });
-  }
-  componentDidMount() {
-    isLoggedIn().then(json => {
-      this.setState({
-        loggedIn: json.logged_in,
-        is_admin: json.is_admin
-      });
     });
   }
   render() {
@@ -53,7 +34,7 @@ class App extends Component {
 
     const { loggedIn, is_admin } = this.state;
     if (loggedIn) {
-      var component = <Dashboard logout={this.logout} is_admin={is_admin} />;
+      var component = <Dashboard logout={this.setLoggedOut} is_admin={is_admin} />;
     } else {
       var component = <Login setLoggedIn={this.setLoggedIn} />;
     }

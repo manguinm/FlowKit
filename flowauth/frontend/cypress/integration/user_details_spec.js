@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 describe("User details screen", function () {
+    Cypress.Cookies.debug(true)
+
     beforeEach(function () {
         // Log in and navigate to user details screen
         cy.login();
