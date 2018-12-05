@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { logout } from "./util/api";
 import ErrorDialog from "./ErrorDialog";
 
 class ErrorBoundary extends React.Component {
