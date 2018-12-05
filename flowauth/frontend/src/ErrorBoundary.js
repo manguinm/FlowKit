@@ -16,7 +16,7 @@ class ErrorBoundary extends React.Component {
     componentDidCatch(error, info) {
         console.log(error);
         if (error.code === 401) {
-            logout().then(setTimeout(this.props.setLoggedOut, 50));
+            logout().then(json => { this.props.setLoggedOut() });
         }
     }
 
