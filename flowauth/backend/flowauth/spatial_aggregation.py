@@ -30,7 +30,7 @@ def list_all_spatial_aggregation():
 
 @blueprint.route("", methods=["POST"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def add_aggregation_unit():
     """
     Add a new spatial aggregation unit.
@@ -49,7 +49,7 @@ def add_aggregation_unit():
 
 @blueprint.route("/<agg_unit_id>", methods=["DELETE"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def rm_aggregation_unit(agg_unit_id):
     """
     Delete a unit of spatial aggregation.

@@ -8,6 +8,10 @@ class ErrorBoundary extends React.Component {
         this.state = { hasError: false, error: { message: "" } };
     }
 
+    clearError = () => {
+        this.setState({ hasError: false, error: { message: "" } });
+    }
+
     static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
         return { hasError: true, error: error };
@@ -16,7 +20,7 @@ class ErrorBoundary extends React.Component {
     componentDidCatch(error, info) {
         console.log(error);
         if (error.code === 401) {
-            logout().then(json => { this.props.setLoggedOut() });
+            this.props.setLoggedOut();
         }
     }
 
@@ -24,7 +28,11 @@ class ErrorBoundary extends React.Component {
         return (
             <React.Fragment>
                 {this.props.children}
-                <ErrorDialog open={this.state.hasError} message={this.state.error.message} />
+                <ErrorDialog
+                    open={this.state.hasError}
+                    onClose={this.clearError}
+                    message={this.state.error.message}
+                />
             </React.Fragment>
         );
     }

@@ -16,7 +16,7 @@ admin_permission = Permission(RoleNeed("admin"))
 
 @blueprint.route("/servers")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_all_servers():
     """Get a list of all the servers in the form [{"id":<server_id>, "name":<server_name>}]"""
     return jsonify(
@@ -26,7 +26,7 @@ def list_all_servers():
 
 @blueprint.route("/servers/<server_id>")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def get_server(server_id):
     """
     Get the id, name, and secret key of a server by its ID.
@@ -43,7 +43,7 @@ def get_server(server_id):
 
 @blueprint.route("/capabilities")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_all_capabilities():
     """
     Get a list of all the capabilities.
@@ -76,7 +76,7 @@ def list_all_capabilities():
 
 @blueprint.route("/capabilities", methods=["POST"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def add_capability():
     """
     Add a new capability.
@@ -95,7 +95,7 @@ def add_capability():
 
 @blueprint.route("/capabilities/<cap_id>", methods=["DELETE"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def rm_capability(cap_id):
     """
     Delete a capability.
@@ -108,7 +108,7 @@ def rm_capability(cap_id):
 
 @blueprint.route("/servers/<server_id>/capabilities")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_server_capabilities(server_id):
     """
     Get a list of all the capabilities enabled on a server.
@@ -155,7 +155,7 @@ def list_server_capabilities(server_id):
 
 @blueprint.route("/servers/<server_id>/capabilities", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_server_capabilities(server_id):
     """
     Alter the capabilities enabled on a server.
@@ -204,7 +204,7 @@ def edit_server_capabilities(server_id):
 
 @blueprint.route("/servers/<server_id>/time_limits")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_server_time_limits(server_id):
     """
     Get the longest lifetime for tokens (in minutes) and latest expiry date
@@ -221,7 +221,7 @@ def list_server_time_limits(server_id):
 
 @blueprint.route("/servers", methods=["POST"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def add_server():
     """
     Create a new server.
@@ -255,7 +255,7 @@ def add_server():
 
 @blueprint.route("/servers/<server_id>", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_server(server_id):
     """
     Alter the name, latest token expiry, secret key or longest token life of a server.
@@ -280,7 +280,7 @@ def edit_server(server_id):
 
 @blueprint.route("/servers/<server_id>", methods=["DELETE"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def rm_server(server_id):
     """Remove a server."""
     server = Server.query.filter(Server.id == server_id).first_or_404()
@@ -291,7 +291,7 @@ def rm_server(server_id):
 
 @blueprint.route("/groups")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_all_groups():
     """List all the groups."""
     return jsonify(
@@ -304,7 +304,7 @@ def list_all_groups():
 
 @blueprint.route("/groups", methods=["POST"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def add_group():
     """
     Create a group.
@@ -322,7 +322,7 @@ def add_group():
 
 @blueprint.route("/groups/<group_id>", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_group(group_id):
     """
     Change the name of a group.
@@ -340,7 +340,7 @@ def edit_group(group_id):
 
 @blueprint.route("/groups/<group_id>", methods=["DELETE"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def rm_group(group_id):
     """Delete a group if it exists."""
     group = Group.query.filter(Group.id == group_id).first_or_404()
@@ -351,7 +351,7 @@ def rm_group(group_id):
 
 @blueprint.route("/groups/<group_id>")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def group_details(group_id):
     """
     Get the details of a group.
@@ -382,7 +382,7 @@ def group_details(group_id):
 
 @blueprint.route("/groups/<group_id>/servers")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def group_servers(group_id):
     """List all the servers a group can access."""
     group = Group.query.filter(Group.id == group_id).first_or_404()
@@ -396,7 +396,7 @@ def group_servers(group_id):
 
 @blueprint.route("/groups/<group_id>/servers/<server_id>/time_limits")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def group_server_time_limits(group_id, server_id):
     """
     Get the longest lifetime for tokens (in minutes) and latest expiry date
@@ -417,7 +417,7 @@ def group_server_time_limits(group_id, server_id):
 
 @blueprint.route("/groups/<group_id>/servers/<server_id>/capabilities")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def group_server_rights(group_id, server_id):
     """
     Enumerate the rights a group has on a server.
@@ -463,7 +463,7 @@ def group_server_rights(group_id, server_id):
 
 @blueprint.route("/groups/<group_id>/servers", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_group_servers(group_id):
     """
     Alter the server access rights of a group.
@@ -573,7 +573,7 @@ def edit_group_servers(group_id):
 
 @blueprint.route("/groups/<group_id>/members")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def group_members(group_id):
     """List the members of a group."""
     group = Group.query.filter(Group.id == group_id).first_or_404()
@@ -582,7 +582,7 @@ def group_members(group_id):
 
 @blueprint.route("/groups/<group_id>/members", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_group_members(group_id):
     """
     Alter the membership of a group
@@ -611,7 +611,7 @@ def edit_group_members(group_id):
 
 @blueprint.route("/users")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_all_users():
     """Get a list of all the users."""
     return jsonify(
@@ -621,7 +621,7 @@ def list_all_users():
 
 @blueprint.route("/users", methods=["POST"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def add_user():
     """
     Create a new user.
@@ -649,7 +649,7 @@ def add_user():
 
 @blueprint.route("/users/<user_id>", methods=["DELETE"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def rm_user(user_id):
     """
     Delete a user if they exist.
@@ -673,7 +673,7 @@ def rm_user(user_id):
 
 @blueprint.route("/users/<user_id>", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def edit_user(user_id):
     """
     Modify an existing user.
@@ -729,7 +729,7 @@ def edit_user(user_id):
 
 @blueprint.route("/users/<user_id>")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def user_details(user_id):
     """
     Get the details of a user - id, name, admin poll, group memberships, server access granted
@@ -765,7 +765,7 @@ def user_details(user_id):
 
 @blueprint.route("/users/<user_id>/groups")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def get_user_groups(user_id):
     """
     Get all the groups a user is a member of.
@@ -786,7 +786,7 @@ def get_user_groups(user_id):
 
 @blueprint.route("/users/<user_id>/user_group")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def get_user_group(user_id):
     """
     Get a user's personal group.
@@ -803,7 +803,7 @@ def get_user_group(user_id):
 
 @blueprint.route("/users/<user_id>/groups", methods=["PATCH"])
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def set_user_groups(user_id):
     """
     Alter the groups a user is a member of.
@@ -840,7 +840,7 @@ def set_user_groups(user_id):
 
 @blueprint.route("/tokens")
 @login_required
-@admin_permission.require(http_exception=401)
+@admin_permission.require(http_exception=403)
 def list_all_tokens():
     """
     Get all the tokens.
