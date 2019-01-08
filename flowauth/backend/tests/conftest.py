@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import os
 import pytest
 
 from flowauth import (
@@ -18,6 +19,28 @@ from flowauth import (
     Token,
     SpatialAggregationUnit,
 )
+
+here = os.path.dirname(os.path.abspath(__file__))
+
+
+@pytest.fixture
+def dummy_server_a_secret_key():
+    return open(os.path.join(here, 'jwt-key-a'), 'r').read()
+
+
+@pytest.fixture
+def dummy_server_a_public_key():
+    return open(os.path.join(here, 'jwt-key-a.pub'), 'r').read()
+
+
+@pytest.fixture
+def dummy_server_b_secret_key():
+    return open(os.path.join(here, 'jwt-key-b'), 'r').read()
+
+
+@pytest.fixture
+def dummy_server_b_public_key():
+    return open(os.path.join(here, 'jwt-key-b.pub'), 'r').read()
 
 
 @pytest.fixture
