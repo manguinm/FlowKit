@@ -38,7 +38,7 @@ def test_reject_when_claim_not_allowed(client, auth):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_token_generation(client, auth, app):
+def test_token_generation(client, auth, dummy_server_a_public_key):
 
     # Log in first
     response, csrf_cookie = auth.login("TEST_USER", "DUMMY_PASSWORD")
@@ -59,7 +59,7 @@ def test_token_generation(client, auth, app):
     assert 200 == response.status_code
     token_json = response.get_json()
     decoded_token = jwt.decode(
-        token_json["token"].encode(), "DUMMY_SERVER_A_KEY", algorithms=["HS256"]
+        token_json["token"].encode(), dummy_server_a_public_key, algorithms=["RS256"]
     )
     assert {
         "DUMMY_ROUTE_A": {

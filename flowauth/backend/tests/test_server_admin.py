@@ -20,7 +20,7 @@ def test_list_servers(client, auth, app):
 
 
 @pytest.mark.usefixtures("test_data_with_access_rights")
-def test_get_server(client, auth, app):
+def test_get_server(client, auth, dummy_server_a_secret_key):
 
     # Log in first
     response, csrf_cookie = auth.login("TEST_ADMIN", "DUMMY_PASSWORD")
@@ -30,7 +30,7 @@ def test_get_server(client, auth, app):
     assert {
         "id": 1,
         "name": "DUMMY_SERVER_A",
-        "secret_key": "DUMMY_SERVER_A_KEY",
+        "secret_key": dummy_server_a_secret_key,
     } == response.get_json()
 
 
@@ -50,7 +50,7 @@ def test_get_server_time_limits(client, auth, app):
     } == response.get_json()
 
 
-def test_create_server(client, auth, test_admin):
+def test_create_server(client, auth, test_admin, dummy_server_a_secret_key):
     uid, username, password = test_admin
     response, csrf_cookie = auth.login(username, password)
     response = client.post(
@@ -59,7 +59,7 @@ def test_create_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
+            "secret_key": dummy_server_a_secret_key,
             "name": "DUMMY_SERVER_Z",
         },
     )
@@ -68,7 +68,7 @@ def test_create_server(client, auth, test_admin):
     assert [{"id": 1, "name": "DUMMY_SERVER_Z"}] == response.get_json()
 
 
-def test_create_server_errors_with_missing_name(client, auth, test_admin):
+def test_create_server_errors_with_missing_name(client, auth, test_admin, dummy_server_a_secret_key):
     """Should block create of server with no name key and return error json."""
     uid, username, password = test_admin
     response, csrf_cookie = auth.login(username, password)
@@ -78,7 +78,7 @@ def test_create_server_errors_with_missing_name(client, auth, test_admin):
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
+            "secret_key": dummy_server_a_secret_key,
         },
     )
     assert 400 == response.status_code
@@ -99,7 +99,7 @@ def test_create_server_errors_with_missing_name(client, auth, test_admin):
     ],
 )
 def test_create_server_errors_with_bad_name(
-    name, expected_message, client, auth, test_admin
+    name, expected_message, client, auth, test_admin, dummy_server_a_secret_key
 ):
     """Should block create of server with zero length or too long name and return error json."""
     uid, username, password = test_admin
@@ -110,7 +110,7 @@ def test_create_server_errors_with_bad_name(
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
+            "secret_key": dummy_server_a_secret_key,
             "name": name,
         },
     )
@@ -124,7 +124,7 @@ def test_create_server_errors_with_bad_name(
     assert [] == response.get_json()
 
 
-def test_create_server_errors_with_same_name(client, auth, test_admin):
+def test_create_server_errors_with_same_name(client, auth, test_admin, dummy_server_a_secret_key):
     """Should block create of server with same name as an existing one and return error json."""
     uid, username, password = test_admin
     response, csrf_cookie = auth.login(username, password)
@@ -135,7 +135,7 @@ def test_create_server_errors_with_same_name(client, auth, test_admin):
             json={
                 "latest_token_expiry": "2019-01-01T00:00:00.0Z",
                 "longest_token_life": 1440,
-                "secret_key": "DUMMY_SECRET_KEY",
+                "secret_key": dummy_server_a_secret_key,
                 "name": "TEST_SERVER",
             },
         )
@@ -161,7 +161,7 @@ def test_rm_server(client, auth):
     assert [] == response.get_json()  # Should have no tokens
 
 
-def test_edit_server(client, auth, test_admin):
+def test_edit_server(client, auth, test_admin, dummy_server_a_secret_key, dummy_server_b_secret_key):
     uid, username, password = test_admin
     response, csrf_cookie = auth.login(username, password)
     response = client.post(
@@ -170,7 +170,7 @@ def test_edit_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2019-01-01T00:00:00.0Z",
             "longest_token_life": 1440,
-            "secret_key": "DUMMY_SECRET_KEY",
+            "secret_key": dummy_server_a_secret_key,
             "name": "DUMMY_SERVER_Z",
         },
     )
@@ -180,7 +180,7 @@ def test_edit_server(client, auth, test_admin):
         json={
             "latest_token_expiry": "2020-01-01T00:00:00.0Z",
             "longest_token_life": 1,
-            "secret_key": "DUMMY_SECRET_KEY_X",
+            "secret_key": dummy_server_b_secret_key,
             "name": "DUMMY_SERVER_X",
         },
     )
@@ -189,7 +189,7 @@ def test_edit_server(client, auth, test_admin):
     assert {
         "id": 1,
         "name": "DUMMY_SERVER_X",
-        "secret_key": "DUMMY_SECRET_KEY_X",
+        "secret_key": dummy_server_b_secret_key,
     } == response.get_json()
     response = client.get(
         "/admin/servers/1/time_limits", headers={"X-CSRF-Token": csrf_cookie}

@@ -10,7 +10,7 @@ from flowauth import (
 )
 
 
-def test_disallow_right_on_server_disallows_for_group(app):
+def test_disallow_right_on_server_disallows_for_group(app, dummy_server_a_secret_key):
     """Test that if a claim is disallowed on a server, it will be disallowed even if previously granted to groups."""
     with app.app_context():
         user = User(username="TEST_USER", password="TEST_PASSWORD")
@@ -20,7 +20,7 @@ def test_disallow_right_on_server_disallows_for_group(app):
             name="TEST_SERVER",
             longest_token_life=2880,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
-            secret_key="TEST_SECRET",
+            secret_key=dummy_server_a_secret_key,
         )
         capability = Capability(name="TEST_ROUTE")
         server_capability = ServerCapability(
@@ -42,7 +42,7 @@ def test_disallow_right_on_server_disallows_for_group(app):
         assert {} == claims
 
 
-def test_token_time_limits_reflect_server_limits(app):
+def test_token_time_limits_reflect_server_limits(app, dummy_server_a_secret_key):
     """Test that if a user's token time limits are bounded to those current on the server."""
     with app.app_context():
         user = User(username="TEST_USER", password="TEST_PASSWORD")
@@ -52,7 +52,7 @@ def test_token_time_limits_reflect_server_limits(app):
             name="TEST_SERVER",
             longest_token_life=2880,
             latest_token_expiry=datetime.datetime(2020, 1, 1),
-            secret_key="TEST_SECRET",
+            secret_key=dummy_server_a_secret_key,
         )
         token_limits = GroupServerTokenLimits(
             group=user_group,
