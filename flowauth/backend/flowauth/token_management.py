@@ -208,7 +208,7 @@ def add_token(server):
     token_string = encode_access_token(
         identity=current_user.username,
         secret=server.secret_key,
-        algorithm="HS256",
+        algorithm="RS256",
         expires_delta=lifetime,
         fresh=True,
         user_claims=json["claims"],
