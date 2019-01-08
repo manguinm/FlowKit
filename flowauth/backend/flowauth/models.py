@@ -310,6 +310,8 @@ class Server(db.Model):
         plaintext: str
             Key to encrypt.
         """
+        if not plaintext.startswith("-----BEGIN RSA PRIVATE KEY-----"):
+            raise ValueError(f"Argument does not seem to be a valid secret key: '{plaintext}'")
         self._secret_key = get_fernet().encrypt(plaintext.encode())
 
     def __repr__(self):
