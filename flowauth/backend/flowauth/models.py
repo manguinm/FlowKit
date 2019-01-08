@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import os
 from itertools import chain
 
 import click
@@ -11,6 +12,8 @@ from flask import current_app
 from flask.cli import with_appcontext
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.ext.hybrid import hybrid_property
+
+here = os.path.dirname(os.path.abspath(__file__))
 
 db = SQLAlchemy()
 from passlib.hash import argon2
@@ -521,7 +524,7 @@ def make_demodata():  # pragma: no cover
         name="Aruba",
         longest_token_life=2880,
         latest_token_expiry=datetime.datetime(2020, 1, 1),
-        secret_key="a_very_secret_key",
+        secret_key=open(os.path.join(here, "..", "tests", "jwt-key-a"), 'r').read(),
     )
 
     db.session.add(test_server)
