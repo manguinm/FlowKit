@@ -1,0 +1,2 @@
+include versioneer.py
+include flowkit_common/_version.py
