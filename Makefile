@@ -80,8 +80,11 @@ flowmachine-up:
 flowmachine-down:
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) rm -f -s -v flowmachine
 
-flowmachine-build:
+flowmachine-build: copy-flowkit-common-into-flowmachine-folder
 	docker-compose -f $(DOCKER_COMPOSE_FILE_DEV) build flowmachine
+
+copy-flowkit-common-into-flowmachine-folder:
+	cp -r ./flowkit_common flowmachine/
 
 
 flowapi-up:

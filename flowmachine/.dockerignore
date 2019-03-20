@@ -11,6 +11,7 @@
 #
 !Pipfile
 !Pipfile.lock
+!flowkit_common/
 !flowmachine/
 !setup.cfg
 !setup.py

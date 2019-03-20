@@ -4,10 +4,14 @@
 
 FROM python:3.7
 
-WORKDIR /app
-COPY Pipfile* /app/
+WORKDIR /usr/src/flowmachine
+# Note: the flowkit_common/ folder must be copied manually into the flowmachine/ folder
+# so that docker can pick it up here. This is a temporary hack until flowkit_common can
+# be installed from PyPI.
+COPY ./flowkit_common /usr/src/flowkit_common/
+COPY Pipfile* /usr/src/flowmachine/
 RUN pip install pipenv && pipenv install --deploy
-COPY . /app/
+COPY . /usr/src/flowmachine/
 RUN pipenv install --skip-lock .
 CMD ["pipenv", "run", "flowmachine"]
 ENV LOG_LEVEL=error
