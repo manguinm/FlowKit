@@ -9,6 +9,8 @@ name = "pypi"
 ipdb = "*"
 versioneer = "*"
 "e1839a8" = {editable = true, path = "."}
+pytest = "*"
+pytest-cov = "*"
 
 [requires]
 python_version = "3.7"
