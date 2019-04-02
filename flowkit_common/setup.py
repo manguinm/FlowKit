@@ -36,7 +36,7 @@ setup(
     keywords="mobile telecommunications analysis",
     packages=["flowkit_common"],
     include_package_data=True,
-    install_requires=[],
+    install_requires=["rapidjson"],
     extras_require={"test": test_requirements},
     tests_require=test_requirements,
     setup_requires=["pytest-runner"],
