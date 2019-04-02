@@ -108,14 +108,14 @@ async def test_get_json_status_code(
         ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ).as_json(),
+        ).to_json(),
         ZMQReply(
             status="success",
             payload={
                 "query_id": "DUMMY_QUERY_ID",
                 "query_params": {"aggregation_unit": "DUMMY_AGGREGATION"},
             },
-        ).as_json(),
+        ).to_json(),
         ZMQReply(
             status=reply_msg_status,
             msg="Some error",  # note: in a real zmq message this would only be present in the "error" case, but we provide it for all test cases (it is simply ignored in the success case)
@@ -124,7 +124,7 @@ async def test_get_json_status_code(
                 "query_state": query_state,
                 "sql": "SELECT 1;",  # note: in a real zmq message this would only be present in the "success" case, but we provide it for all test cases (it is simply ignored in the error case)
             },
-        ).as_json(),
+        ).to_json(),
     )
     response = await client.get(
         f"/api/0/get/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}

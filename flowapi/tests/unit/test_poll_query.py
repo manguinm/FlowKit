@@ -41,11 +41,11 @@ async def test_poll_query(
         ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ).as_json(),
+        ).to_json(),
         then=ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": query_state},
-        ).as_json(),
+        ).to_json(),
     )
     response = await client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
@@ -69,11 +69,11 @@ async def test_poll_query_query_error(app, access_token_builder, dummy_zmq_serve
         ZMQReply(
             status="success",
             payload={"query_id": "DUMMY_QUERY_ID", "query_kind": "modal_location"},
-        ).as_json(),
+        ).to_json(),
         then=ZMQReply(
             status="error",
             payload={"query_id": "DUMMY_QUERY_ID", "query_state": "error"},
-        ).as_json(),
+        ).to_json(),
     )
     response = await client.get(
         f"/api/0/poll/DUMMY_QUERY_ID", headers={"Authorization": f"Bearer {token}"}
