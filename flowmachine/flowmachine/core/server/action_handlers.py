@@ -27,11 +27,11 @@ from flowmachine.core.query_info_lookup import (
     UnkownQueryIdError,
     QueryInfoLookupError,
 )
+from flowkit_common import ZMQReply
 from flowmachine.core.query_state import QueryStateMachine, QueryState
 from flowmachine.utils import convert_dict_keys_to_strings
 from .exceptions import FlowmachineServerError
 from .query_schemas import FlowmachineQuerySchema
-from .zmq_helpers import ZMQReply
 
 __all__ = ["perform_action"]
 

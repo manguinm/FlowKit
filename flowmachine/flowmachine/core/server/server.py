@@ -14,9 +14,9 @@ from functools import partial
 from zmq.asyncio import Context
 
 import flowmachine
+from flowkit_common import ZMQReply, parse_zmq_message
 from .action_handlers import perform_action
 from .exceptions import FlowmachineServerError
-from .zmq_helpers import ZMQReply, parse_zmq_message
 
 
 logger = structlog.get_logger("flowmachine.debug", submodule=__name__)

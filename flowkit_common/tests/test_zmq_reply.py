@@ -4,6 +4,8 @@ from flowkit_common.zmq_reply import (
     ZMQReplyStatus,
     ZMQReplyMessage,
     ZMQReplyPayload,
+    parse_zmq_message,
+    FlowKitZMQError,
 )
 
 # Tests for ZMQReply
@@ -127,3 +129,31 @@ def test_zmq_reply_payload_raises_error_for_invalid_input():
     with pytest.raises(ValueError):
         some_list_of_dicts = [{"a": 1}, {"b": 2}]
         ZMQReplyPayload(some_list_of_dicts)
+
+
+def test_zmq_msg_default_params():
+    """Test an ommitted params key gets a default of an empty dict"""
+    action, request_id, action_params = parse_zmq_message(
+        '{"action": "DUMMY_ACTION", "request_id": "DUMMY_REQUEST_ID"}'
+    )
+    assert action == "DUMMY_ACTION"
+    assert request_id == "DUMMY_REQUEST_ID"
+    assert action_params == {}
+
+
+@pytest.mark.parametrize(
+    "bad_message",
+    [
+        "NOT_JSON",
+        '{"action": "DUMMY_ACTION", "params": {}, "request_id": "DUMMY_REQUEST_ID", "EXTRA_KEY": "EXTRA_KEY_VALUE"}',
+        '{"params": {}, "request_id": "DUMMY_REQUEST_ID"}',
+        '{"action": "DUMMY_ACTION", "params": {}}',
+        '{"action": -1, "params": {}}',
+        '{"action": "DUMMY_ACTION", "params": "NOT_A_DICT", "request_id": "DUMMY_REQUEST_ID"}',
+        '{"action": "DUMMY_ACTION", "params": {}, "request_id": -1}',
+    ],
+)
+def test_zmq_msg_parse_error(bad_message):
+    """Test errors are raised as expected when failing to parse zmq messages"""
+    with pytest.raises(FlowKitZMQError):
+        parse_zmq_message(bad_message)
