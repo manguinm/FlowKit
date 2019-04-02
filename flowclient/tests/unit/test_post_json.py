@@ -8,7 +8,7 @@ from requests import ConnectionError
 import flowclient
 from flowclient.client import FlowclientConnectionError
 
-from .zmq_helpers import ZMQReply
+from flowkit_common import ZMQReply
 
 
 @pytest.mark.parametrize("status_code", [202])
@@ -42,7 +42,7 @@ def test_401_error(session_mock, token):
     session_mock.post.return_value.status_code = 401
     session_mock.post.return_value.json.return_value = ZMQReply(
         status="error", msg="ERROR_MESSAGE"
-    ).as_json()
+    ).to_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(FlowclientConnectionError, match="ERROR_MESSAGE"):
         connection.post_json("DUMMY_ROUTE", {})
@@ -53,7 +53,7 @@ def test_401_unknown_error(session_mock, token):
     session_mock.get.return_value.status_code = 401
     session_mock.get.return_value.json.return_value = ZMQReply(
         status="error", msg="Unknown access denied error", payload={}
-    ).as_json()
+    ).to_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(FlowclientConnectionError, match="Unknown access denied error"):
         connection.get_url("DUMMY_ROUTE")
@@ -64,7 +64,7 @@ def test_generic_status_code_error(session_mock, token):
     session_mock.post.return_value.status_code = 418
     session_mock.post.return_value.json.return_value = ZMQReply(
         status="error", msg="I AM A TEAPOT"
-    ).as_json()
+    ).to_json()
     connection = flowclient.connect("DUMMY_API", token)
     with pytest.raises(
         FlowclientConnectionError,
