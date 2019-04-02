@@ -5,7 +5,7 @@
 import pytest
 from json import loads
 
-from tests.unit.zmq_helpers import ZMQReply
+from flowkit_common import ZMQReply
 
 
 @pytest.mark.asyncio

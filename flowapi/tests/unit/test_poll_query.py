@@ -5,7 +5,7 @@
 import pytest
 from asynctest import return_once
 
-from tests.unit.zmq_helpers import ZMQReply
+from flowkit_common import ZMQReply
 
 
 @pytest.mark.parametrize(
