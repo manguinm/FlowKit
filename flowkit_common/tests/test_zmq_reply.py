@@ -15,8 +15,8 @@ def test_can_construct_valid_zmq_reply():
     """
     Test that we can construct a ZMQReply and it contains the expected fields.
     """
-    reply = ZMQReply(status="accepted", msg="foobar", payload={"a": 1, "b": 2})
-    assert "accepted" == reply.status
+    reply = ZMQReply(status="success", msg="foobar", payload={"a": 1, "b": 2})
+    assert "success" == reply.status
     assert "foobar" == reply.msg
     assert {"a": 1, "b": 2} == reply.payload
 
@@ -25,8 +25,8 @@ def test_zmq_reply_to_json():
     """
     ZMQReply can be converted to JSON.
     """
-    reply = ZMQReply("accepted", msg="foobar", payload={"a": 1, "b": 2})
-    expected_json = {"status": "accepted", "msg": "foobar", "payload": {"a": 1, "b": 2}}
+    reply = ZMQReply("success", msg="foobar", payload={"a": 1, "b": 2})
+    expected_json = {"status": "success", "msg": "foobar", "payload": {"a": 1, "b": 2}}
     assert expected_json == reply.to_json()
 
 
@@ -34,9 +34,9 @@ def test_zmq_reply_from_json():
     """
     ZMQReply can be imported from JSON.
     """
-    json_data = {"status": "accepted", "msg": "foobar", "payload": {"a": 1, "b": 2}}
+    json_data = {"status": "success", "msg": "foobar", "payload": {"a": 1, "b": 2}}
     reply = ZMQReply.from_json(json_data)
-    assert "accepted" == reply.status
+    assert "success" == reply.status
     assert "foobar" == reply.msg
     assert {"a": 1, "b": 2} == reply.payload
 
@@ -49,7 +49,7 @@ def test_at_least_one_of_message_or_payload_must_be_provided():
         ValueError,
         match="At least one of the arguments 'msg', 'payload' must be provided.",
     ):
-        ZMQReply(status="accepted", msg="", payload=None)
+        ZMQReply(status="success", msg="", payload=None)
 
 
 def test_missing_key_when_loading_from_json():
@@ -66,13 +66,13 @@ def test_missing_key_when_loading_from_json():
         ValueError,
         match="JSON data does not represent a valid ZMQReply. Missing key: 'msg'",
     ):
-        ZMQReply.from_json({"status": "accepted", "payload": {}})
+        ZMQReply.from_json({"status": "success", "payload": {}})
 
     with pytest.raises(
         ValueError,
         match="JSON data does not represent a valid ZMQReply. Missing key: 'payload'",
     ):
-        ZMQReply.from_json({"status": "accepted", "msg": "foobar"})
+        ZMQReply.from_json({"status": "success", "msg": "foobar"})
 
 
 #
