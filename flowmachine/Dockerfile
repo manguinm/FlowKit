@@ -6,8 +6,8 @@ FROM python:3.7
 
 WORKDIR /usr/src/flowmachine
 # Note: the flowkit_common/ folder must be copied manually into the flowmachine/ folder
-# so that docker can pick it up here. This is a temporary hack until flowkit_common can
-# be installed from PyPI.
+# so that docker can pick it up here. This is a temporary workaround until flowkit_common
+# can be installed from PyPI.
 COPY ./flowkit_common /usr/src/flowkit_common/
 COPY Pipfile* /usr/src/flowmachine/
 RUN pip install pipenv && pipenv install --deploy
