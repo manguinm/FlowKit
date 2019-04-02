@@ -7,6 +7,7 @@ name = "pypi"
 requests = "*"
 pandas = "*"
 pyjwt = "*"
+flowkit_common = {editable = true,path = "./../flowkit_common"}
 
 [dev-packages]
 pytest = "*"

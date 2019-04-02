@@ -11,6 +11,7 @@ asyncpg = "*"
 flask-jwt-extended = "*"
 structlog = "*"
 python-rapidjson = "*"
+flowkit_common = {editable = true,path = "./../flowkit_common"}
 
 [dev-packages]
 pytest = "*"

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a6cdbf62d7478ced2249aec00fd391455c5e09b8900b22f82f4f97ca72f49ee5"
+            "sha256": "d0333c4fddd4954d044527df1c68de12a77135cf522c3e60e61e4133be2887c5"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -29,6 +29,10 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
+        },
+        "flowkit-common": {
+            "editable": true,
+            "path": "./../flowkit_common"
         },
         "idna": {
             "hashes": [
@@ -112,6 +116,12 @@
                 "sha256:d5f05e487007e29e03409f9398d074e158d920d36eb82eaf66fb1136b0c5374c"
             ],
             "version": "==2018.9"
+        },
+        "rapidjson": {
+            "hashes": [
+                "sha256:2e8e4a22f8b6adc45b6467513ede171ac6f891d417ddd59ddb3a7bbf2f3bb65c"
+            ],
+            "version": "==1.0.0"
         },
         "requests": {
             "hashes": [
