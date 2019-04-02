@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "75c2aef9f205392acfc93796fbb9fd02a68fe90d6402e800c92c32310cdd74c4"
+            "sha256": "4ef587280ac4d483983e065419cc4b2e258bd9a31d5cb47b4779d6491666798f"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -184,6 +184,10 @@
         "flowclient": {
             "editable": true,
             "path": "./../flowclient"
+        },
+        "flowkit-common": {
+            "editable": true,
+            "path": "./../flowkit_common"
         },
         "flowmachine": {
             "editable": true,
@@ -578,6 +582,12 @@
             ],
             "index": "pypi",
             "version": "==0.8.1"
+        },
+        "rapidjson": {
+            "hashes": [
+                "sha256:2e8e4a22f8b6adc45b6467513ede171ac6f891d417ddd59ddb3a7bbf2f3bb65c"
+            ],
+            "version": "==1.0.0"
         },
         "redis": {
             "hashes": [
