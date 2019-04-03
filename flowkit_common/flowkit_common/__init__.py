@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-from .zmq_reply import ZMQReply, parse_zmq_message
-
+from .zmq_reply import ZMQReply, ZMQReplyStatus, parse_zmq_message
 from ._version import get_versions
 
+# Set __version__ attribute via versioneer
 __version__ = get_versions()["version"]
 del get_versions
