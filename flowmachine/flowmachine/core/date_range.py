@@ -27,7 +27,7 @@ class DateRange:
     def _parse_date(self, input_date):
         if isinstance(input_date, dt.date):
             if isinstance(input_date, dt.datetime):
-                # a bit of gymnastics because dt.date is a subtype of dt.datetime...
+                # Need a bit of gymnastics because dt.date is a subtype of dt.datetime
                 raise TypeError(
                     "Date must be an instance of datetime.date, but got datetime.datetime"
                 )
