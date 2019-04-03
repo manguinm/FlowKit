@@ -60,10 +60,10 @@ def get_reply_for_message(msg_str: str) -> dict:
             reply_payload=reply.payload,
         )
     except FlowmachineServerError as exc:
-        return ZMQReply(status="error", msg=exc.error_msg).as_json()
+        return ZMQReply(status="error", msg=exc.error_msg).to_json()
 
     # Return the reply (in JSON format)
-    return reply.as_json()
+    return reply.to_json()
 
 
 async def receive_next_zmq_message_and_send_back_reply(socket):
