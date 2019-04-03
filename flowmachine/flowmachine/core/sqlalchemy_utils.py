@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import pandas as pd
+from flowmachine.utils import pretty_sql
 from sqlalchemy import Table, MetaData
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql import Selectable
@@ -55,7 +56,7 @@ def get_sql_string(sqlalchemy_query):
         dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
     )
     sql = str(compiled_query)
-    return sql
+    return pretty_sql(sql)
 
 
 def get_query_result_as_dataframe(query, *, engine):
