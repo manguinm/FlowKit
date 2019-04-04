@@ -170,3 +170,106 @@ def test_filter_sqlalchemy_query_by_date_range():
         )
     )
     assert sql_filtered_expected == get_sql_string(select_stmt_filtered)
+
+
+def test_filter_sqlalchemy_query_by_date_range_with_missing_start_date():
+    """
+    DateRange can filter a sqlalchemy query by date range with missing start date
+    """
+    date_range = DateRange(start_date=None, end_date="2016-01-05")
+
+    #
+    # Verify the SQL original query
+    #
+    select_stmt = select([EventsCallsTable.msisdn, EventsCallsTable.datetime])
+    sql_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            """
+        )
+    )
+    assert sql_expected == get_sql_string(select_stmt)
+
+    #
+    # Verify the SQL of the query filtered by dates
+    #
+    select_stmt_filtered = date_range.filter_sqlalchemy_query(
+        select_stmt, date_column=EventsCallsTable.datetime
+    )
+    sql_filtered_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            WHERE events.calls.datetime < '2016-01-05'
+            """
+        )
+    )
+    assert sql_filtered_expected == get_sql_string(select_stmt_filtered)
+
+
+def test_filter_sqlalchemy_query_by_date_range_with_missing_end_date():
+    """
+    DateRange can filter a sqlalchemy query by date range with missing end date
+    """
+    date_range = DateRange(start_date="2016-01-04", end_date=None)
+
+    #
+    # Verify the SQL original query
+    #
+    select_stmt = select([EventsCallsTable.msisdn, EventsCallsTable.datetime])
+    sql_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            """
+        )
+    )
+    assert sql_expected == get_sql_string(select_stmt)
+
+    #
+    # Verify the SQL of the query filtered by dates
+    #
+    select_stmt_filtered = date_range.filter_sqlalchemy_query(
+        select_stmt, date_column=EventsCallsTable.datetime
+    )
+    sql_filtered_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            WHERE events.calls.datetime >= '2016-01-04'
+            """
+        )
+    )
+    assert sql_filtered_expected == get_sql_string(select_stmt_filtered)
+
+
+def test_filter_sqlalchemy_query_by_date_range_with_missing_start_and_end_date():
+    """
+    DateRange can filter a sqlalchemy query by date range with missing start and end date
+    """
+    date_range = DateRange(start_date=None, end_date=None)
+
+    #
+    # Verify the SQL original query and check that the filtered one is identical
+    # (because there are no constraints on the date range).
+    #
+    select_stmt = select([EventsCallsTable.msisdn, EventsCallsTable.datetime])
+    sql_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            """
+        )
+    )
+    assert sql_expected == get_sql_string(select_stmt)
+
+    select_stmt_filtered = date_range.filter_sqlalchemy_query(
+        select_stmt, date_column=EventsCallsTable.datetime
+    )
+    assert sql_expected == get_sql_string(select_stmt_filtered)
