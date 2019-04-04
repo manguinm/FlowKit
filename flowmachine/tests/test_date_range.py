@@ -37,6 +37,21 @@ def test_one_day_past_end_date():
     assert dr.one_day_past_end_date_as_str == "2016-06-01"
 
 
+def test_start_date_must_be_strictly_before_end_date():
+    """
+    Start date of date range must be strictly before end date.
+    """
+    with pytest.raises(
+        ValueError, match="Start date must be strictly before end date."
+    ):
+        DateRange(start_date="2016-01-07", end_date="2016-01-07")
+
+    with pytest.raises(
+        ValueError, match="Start date must be strictly before end date."
+    ):
+        DateRange(start_date="2016-01-05", end_date="2016-01-02")
+
+
 @pytest.mark.parametrize(
     "expected_error_type, start_date, end_date",
     [
