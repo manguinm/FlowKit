@@ -17,24 +17,24 @@ def test_start_and_end_date():
     """
     DateRange knows its start and end date,
     """
-    dp = DateRange(start_date="2016-01-01", end_date="2016-01-03")
-    assert dp.start_date == dt.date(2016, 1, 1)
-    assert dp.end_date == dt.date(2016, 1, 3)
-    assert dp.start_date_as_str == "2016-01-01"
-    assert dp.end_date_as_str == "2016-01-03"
+    dr = DateRange(start_date="2016-01-01", end_date="2016-01-03")
+    assert dr.start_date == dt.date(2016, 1, 1)
+    assert dr.end_date == dt.date(2016, 1, 3)
+    assert dr.start_date_as_str == "2016-01-01"
+    assert dr.end_date_as_str == "2016-01-03"
 
 
 def test_one_day_past_end_date():
     """
     DateRange knows the date after its end date.
     """
-    dp = DateRange(start_date="2016-01-07", end_date="2016-01-14")
-    assert dp.one_day_past_end_date == dt.date(2016, 1, 15)
-    assert dp.one_day_past_end_date_as_str == "2016-01-15"
+    dr = DateRange(start_date="2016-01-07", end_date="2016-01-14")
+    assert dr.one_day_past_end_date == dt.date(2016, 1, 15)
+    assert dr.one_day_past_end_date_as_str == "2016-01-15"
 
-    dp = DateRange(start_date=dt.date(2016, 4, 12), end_date=dt.date(2016, 5, 31))
-    assert dp.one_day_past_end_date == dt.date(2016, 6, 1)
-    assert dp.one_day_past_end_date_as_str == "2016-06-01"
+    dr = DateRange(start_date=dt.date(2016, 4, 12), end_date=dt.date(2016, 5, 31))
+    assert dr.one_day_past_end_date == dt.date(2016, 6, 1)
+    assert dr.one_day_past_end_date_as_str == "2016-06-01"
 
 
 @pytest.mark.parametrize(
