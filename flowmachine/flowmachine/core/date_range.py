@@ -74,6 +74,6 @@ class DateRange:
         """
         sqlalchemy_query_filtered = sqlalchemy_query.where(
             date_column >= self.start_date_as_str
-        ).where(date_column <= self.end_date_as_str)
+        ).where(date_column < self.end_date_as_str)
 
         return sqlalchemy_query_filtered

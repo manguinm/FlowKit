@@ -120,7 +120,7 @@ def test_filter_sqlalchemy_query_by_date_range():
             """
             SELECT events.calls.msisdn, events.calls.datetime
             FROM events.calls
-            WHERE events.calls.datetime >= '2016-01-01' AND events.calls.datetime <= '2016-01-03'
+            WHERE events.calls.datetime >= '2016-01-01' AND events.calls.datetime < '2016-01-03'
             """
         )
     )
