@@ -16,9 +16,9 @@ class DateRange:
         self.start_date_as_str = self.start_date.strftime("%Y-%m-%d")
         self.end_date_as_str = self.end_date.strftime("%Y-%m-%d")
 
-        if self.start_date >= self.end_date:
+        if self.start_date > self.end_date:
             raise ValueError(
-                "Start date must be strictly before end date. "
+                "Start date must not be after end date. "
                 f"Got: start_date={self.start_date_as_str}, end_date={self.end_date_as_str}"
             )
 

@@ -15,13 +15,24 @@ from flowmachine.core.sqlalchemy_utils import get_sql_string
 
 def test_start_and_end_date():
     """
-    DateRange knows its start and end date,
+    DateRange knows its start and end date.
     """
     dr = DateRange(start_date="2016-01-01", end_date="2016-01-03")
     assert dr.start_date == dt.date(2016, 1, 1)
     assert dr.end_date == dt.date(2016, 1, 3)
     assert dr.start_date_as_str == "2016-01-01"
     assert dr.end_date_as_str == "2016-01-03"
+
+
+def test_start_date_can_be_equal_to_end_date():
+    """
+    DateRange knows its start and end date,
+    """
+    dr = DateRange(start_date="2016-01-04", end_date="2016-01-04")
+    assert dr.start_date == dt.date(2016, 1, 4)
+    assert dr.end_date == dt.date(2016, 1, 4)
+    assert dr.start_date_as_str == "2016-01-04"
+    assert dr.end_date_as_str == "2016-01-04"
 
 
 def test_one_day_past_end_date():
@@ -37,18 +48,11 @@ def test_one_day_past_end_date():
     assert dr.one_day_past_end_date_as_str == "2016-06-01"
 
 
-def test_start_date_must_be_strictly_before_end_date():
+def test_start_date_must_not_be_after_end_date():
     """
-    Start date of date range must be strictly before end date.
+    Start date of date range must not be after end date.
     """
-    with pytest.raises(
-        ValueError, match="Start date must be strictly before end date."
-    ):
-        DateRange(start_date="2016-01-07", end_date="2016-01-07")
-
-    with pytest.raises(
-        ValueError, match="Start date must be strictly before end date."
-    ):
+    with pytest.raises(ValueError, match="Start date must not be after end date."):
         DateRange(start_date="2016-01-05", end_date="2016-01-02")
 
 
