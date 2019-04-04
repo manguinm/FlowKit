@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime as dt
+import sqlalchemy
 
 
 class DateRange:
@@ -44,3 +45,23 @@ class DateRange:
             raise TypeError(
                 f"Date must be a string of the format YYYY-MM-DD or a datetime.date object. Got: {type(input_date)}"
             )
+
+    def filter_sqlalchemy_query(self, sqlalchemy_query, *, date_column):
+        """
+        Parameters
+        ----------
+        sqlalchemy_query : sqlalchemy.sql.selectable.Select
+            The sqlalchemy query to be filtered.
+        date_column : sqlalchemy.sql.schema.Column
+            The column to filter by date.
+
+        Returns
+        -------
+        sqlalchemy.sql.selectable.Select
+            The new sqlalchemy query which includes the date range filter.
+        """
+        sqlalchemy_query_filtered = sqlalchemy_query.where(
+            date_column >= self.start_date_as_str
+        ).where(date_column <= self.end_date_as_str)
+
+        return sqlalchemy_query_filtered

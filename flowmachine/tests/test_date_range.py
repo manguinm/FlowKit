@@ -4,8 +4,13 @@
 
 import datetime as dt
 import pytest
+import textwrap
+from sqlalchemy import select
 
+from flowmachine.utils import pretty_sql
 from flowmachine.core.date_range import DateRange
+from flowmachine.core.sqlalchemy_table_definitions import EventsCallsTable
+from flowmachine.core.sqlalchemy_utils import get_sql_string
 
 
 def test_start_and_end_date():
@@ -49,3 +54,41 @@ def test_invalid_start_or_end_dates(expected_error_type, start_date, end_date):
     """
     with pytest.raises(expected_error_type):
         DateRange(start_date=start_date, end_date=end_date)
+
+
+def test_filter_sqlalchemy_query_by_date_range():
+    """
+    DateRange can filter a sqlalchemy query to restrict it to the given dates.
+    """
+    date_range = DateRange(start_date="2016-01-01", end_date="2016-01-03")
+
+    #
+    # Verify the SQL original query
+    #
+    select_stmt = select([EventsCallsTable.msisdn, EventsCallsTable.datetime])
+    sql_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            """
+        )
+    )
+    assert sql_expected == get_sql_string(select_stmt)
+
+    #
+    # Verify the SQL of the query filtered by dates
+    #
+    select_stmt_filtered = date_range.filter_sqlalchemy_query(
+        select_stmt, date_column=EventsCallsTable.datetime
+    )
+    sql_filtered_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            WHERE events.calls.datetime >= '2016-01-01' AND events.calls.datetime <= '2016-01-03'
+            """
+        )
+    )
+    assert sql_filtered_expected == get_sql_string(select_stmt_filtered)
