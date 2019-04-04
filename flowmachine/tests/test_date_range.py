@@ -24,15 +24,23 @@ def test_start_and_end_date():
     assert dr.end_date_as_str == "2016-01-03"
 
 
-def test_start_date_can_be_equal_to_end_date():
+# def test_start_date_can_be_equal_to_end_date():
+#     """
+#     Start date can be equal to end date.
+#     """
+#     dr = DateRange(start_date="2016-01-04", end_date="2016-01-04")
+#     assert dr.start_date == dt.date(2016, 1, 4)
+#     assert dr.end_date == dt.date(2016, 1, 4)
+#     assert dr.start_date_as_str == "2016-01-04"
+#     assert dr.end_date_as_str == "2016-01-04"
+
+
+def test_start_date_must_not_equal_to_end_date():
     """
-    DateRange knows its start and end date,
+    Start date must not be equal to end date.
     """
-    dr = DateRange(start_date="2016-01-04", end_date="2016-01-04")
-    assert dr.start_date == dt.date(2016, 1, 4)
-    assert dr.end_date == dt.date(2016, 1, 4)
-    assert dr.start_date_as_str == "2016-01-04"
-    assert dr.end_date_as_str == "2016-01-04"
+    with pytest.raises(ValueError):
+        DateRange(start_date="2016-01-04", end_date="2016-01-04")
 
 
 def test_start_date_must_not_be_after_end_date():
@@ -92,8 +100,8 @@ def test_date_range_length():
     """
     Date range knows its length (= number of days it contains).
     """
-    dr = DateRange(start_date="2016-01-03", end_date="2016-01-03")
-    assert len(dr) == 1
+    # dr = DateRange(start_date="2016-01-03", end_date="2016-01-03")
+    # assert len(dr) == 1
 
     dr = DateRange(start_date="2016-01-04", end_date="2016-01-08")
     assert len(dr) == 5

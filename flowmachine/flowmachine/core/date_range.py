@@ -17,7 +17,7 @@ class DateRange:
         if (
             (self.start_date is not None)
             and (self.end_date is not None)
-            and (self.start_date > self.end_date)
+            and (self.start_date >= self.end_date)
         ):
             raise ValueError(
                 "Start date must not be after end date. "
