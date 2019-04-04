@@ -26,9 +26,16 @@ class DateRange:
         self.one_day_past_end_date_as_str = self.one_day_past_end_date.strftime(
             "%Y-%m-%d"
         )
+        self.num_days = (self.end_date - self.start_date).days + 1
 
     def __repr__(self):
         return f"DatePeriod(start_date={self.start_date_as_str}, end_date={self.end_date_as_str})"
+
+    def __len__(self):
+        """
+        Return number of days contained in this date range.
+        """
+        return self.num_days
 
     def _parse_date(self, input_date):
         if isinstance(input_date, dt.date):

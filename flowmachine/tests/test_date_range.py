@@ -35,6 +35,28 @@ def test_start_date_can_be_equal_to_end_date():
     assert dr.end_date_as_str == "2016-01-04"
 
 
+def test_start_date_must_not_be_after_end_date():
+    """
+    Start date of date range must not be after end date.
+    """
+    with pytest.raises(ValueError, match="Start date must not be after end date."):
+        DateRange(start_date="2016-01-05", end_date="2016-01-02")
+
+
+def test_date_range_length():
+    """
+    Date range knows its length (= number of days it contains).
+    """
+    dr = DateRange(start_date="2016-01-03", end_date="2016-01-03")
+    assert len(dr) == dr.num_days == 1
+
+    dr = DateRange(start_date="2016-01-04", end_date="2016-01-08")
+    assert len(dr) == dr.num_days == 5
+
+    dr = DateRange(start_date="2016-01-29", end_date="2016-03-05")
+    assert len(dr) == dr.num_days == 37
+
+
 def test_one_day_past_end_date():
     """
     DateRange knows the date after its end date.
@@ -46,14 +68,6 @@ def test_one_day_past_end_date():
     dr = DateRange(start_date=dt.date(2016, 4, 12), end_date=dt.date(2016, 5, 31))
     assert dr.one_day_past_end_date == dt.date(2016, 6, 1)
     assert dr.one_day_past_end_date_as_str == "2016-06-01"
-
-
-def test_start_date_must_not_be_after_end_date():
-    """
-    Start date of date range must not be after end date.
-    """
-    with pytest.raises(ValueError, match="Start date must not be after end date."):
-        DateRange(start_date="2016-01-05", end_date="2016-01-02")
 
 
 @pytest.mark.parametrize(
