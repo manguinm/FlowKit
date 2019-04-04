@@ -100,8 +100,8 @@ def skip_datecheck(request, monkeypatch):
     Use the `check_available_dates` py mark on your test to opt-in to date checking.
     """
     run_date_checks = request.node.get_closest_marker("check_available_dates", False)
-    if not run_date_checks:
-        monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
+    # if not run_date_checks:
+    #     monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
 
 
 @pytest.fixture(autouse=True)
