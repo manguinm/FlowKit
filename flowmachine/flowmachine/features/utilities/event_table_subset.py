@@ -19,6 +19,7 @@ from ...core.sqlalchemy_utils import (
 )
 from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
+from flowmachine.core.date_range import DateRange
 
 import structlog
 
@@ -73,6 +74,7 @@ class EventTableSubset(Query):
         *,
         start=None,
         stop=None,
+        date_range=None,
         hours="all",
         table="events.calls",
         subscriber_subset=None,
@@ -80,16 +82,16 @@ class EventTableSubset(Query):
         subscriber_identifier="msisdn",
     ):
 
-        # Temporary band-aid; marshmallow deserialises date strings
-        # to date objects, so we convert it back here because the
-        # lower-level classes still assume we are passing date strings.
-        if isinstance(start, datetime.date):
-            start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
-            stop = stop.strftime("%Y-%m-%d")
+        if date_range is None and start is None and stop is None:
+            raise ValueError("Either `date_range` or `start`/`stop` must be specified.")
+        if date_range is None:
+            self.date_range = DateRange(start_date=start, end_date=stop)
+        else:
+            assert isinstance(date_range, DateRange)
+            self.date_range = date_range
 
-        self.start = start
-        self.stop = stop
+        self.start = self.date_range.start_date_as_str
+        self.stop = self.date_range.end_date_as_str
         self.hours = hours
         self.subscriber_subset_ORIG = subscriber_subset
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
@@ -117,77 +119,74 @@ class EventTableSubset(Query):
             self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
 
-        if self.start == self.stop:
-            raise ValueError("Start and stop are the same.")
-
         super().__init__()
 
         # This needs to happen after the parent classes init method has been
         # called as it relies upon the connection object existing
-        self._check_dates()
+        # self._check_dates()
 
     @property
     def column_names(self) -> List[str]:
         return [c.split(" AS ")[-1] for c in self.columns]
 
-    def _check_dates(self):
-
-        # Handle the logic for dealing with missing dates.
-        # If there are no dates present, then we raise an error
-        # if some are present, but some are missing we raise a
-        # warning.
-        # If the subscriber does not pass a start or stop date, then we take
-        # the min/max date in the events.calls table
-        if self.start is None:
-            d1 = self.connection.min_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
-        else:
-            d1 = self.start.split()[0]
-
-        if self.stop is None:
-            d2 = self.connection.max_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
-        else:
-            d2 = self.stop.split()[0]
-
-        all_dates = list_of_dates(d1, d2)
-        # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
-        # this will be interpreted as midnight, so we don't want to include this in our
-        # calculations. Check for this here, an if this is the case pop the final element
-        # of the list
-        if (self.stop is not None) and (
-            len(self.stop) == 10 or self.stop.endswith("00:00:00")
-        ):
-            all_dates.pop(-1)
-        # This will be a true false list for whether each of the dates
-        # is present in the database
-        try:
-            db_dates = [
-                d.strftime("%Y-%m-%d")
-                for d in self.connection.available_dates(
-                    table=self.table_ORIG.name,
-                    strictness=1,
-                    schema=self.table_ORIG.schema,
-                )[self.table_ORIG.name]
-            ]
-        except KeyError:  # No dates at all for this table
-            raise MissingDateError
-        dates_present = [d in db_dates for d in all_dates]
-        logger.debug(
-            f"Data for {sum(dates_present)}/{len(dates_present)} calendar dates."
-        )
-        # All dates are missing
-        if not any(dates_present):
-            raise MissingDateError
-        # Some dates are missing, others are present
-        elif not all(dates_present):
-            present_dates = [d for p, d in zip(dates_present, all_dates) if p]
-            warnings.warn(
-                f"{len(dates_present) - sum(dates_present)} of {len(dates_present)} calendar dates missing. Earliest date is {present_dates[0]}, latest is {present_dates[-1]}.",
-                stacklevel=2,
-            )
+    # def _check_dates(self):
+    #
+    #     # Handle the logic for dealing with missing dates.
+    #     # If there are no dates present, then we raise an error
+    #     # if some are present, but some are missing we raise a
+    #     # warning.
+    #     # If the subscriber does not pass a start or stop date, then we take
+    #     # the min/max date in the events.calls table
+    #     if self.start is None:
+    #         d1 = self.connection.min_date(
+    #             self.table_ORIG.fully_qualified_table_name.split(".")[1]
+    #         ).strftime("%Y-%m-%d")
+    #     else:
+    #         d1 = self.start.split()[0]
+    #
+    #     if self.stop is None:
+    #         d2 = self.connection.max_date(
+    #             self.table_ORIG.fully_qualified_table_name.split(".")[1]
+    #         ).strftime("%Y-%m-%d")
+    #     else:
+    #         d2 = self.stop.split()[0]
+    #
+    #     all_dates = list_of_dates(d1, d2)
+    #     # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
+    #     # this will be interpreted as midnight, so we don't want to include this in our
+    #     # calculations. Check for this here, an if this is the case pop the final element
+    #     # of the list
+    #     if (self.stop is not None) and (
+    #         len(self.stop) == 10 or self.stop.endswith("00:00:00")
+    #     ):
+    #         all_dates.pop(-1)
+    #     # This will be a true false list for whether each of the dates
+    #     # is present in the database
+    #     try:
+    #         db_dates = [
+    #             d.strftime("%Y-%m-%d")
+    #             for d in self.connection.available_dates(
+    #                 table=self.table_ORIG.name,
+    #                 strictness=1,
+    #                 schema=self.table_ORIG.schema,
+    #             )[self.table_ORIG.name]
+    #         ]
+    #     except KeyError:  # No dates at all for this table
+    #         raise MissingDateError
+    #     dates_present = [d in db_dates for d in all_dates]
+    #     logger.debug(
+    #         f"Data for {sum(dates_present)}/{len(dates_present)} calendar dates."
+    #     )
+    #     # All dates are missing
+    #     if not any(dates_present):
+    #         raise MissingDateError
+    #     # Some dates are missing, others are present
+    #     elif not all(dates_present):
+    #         present_dates = [d for p, d in zip(dates_present, all_dates) if p]
+    #         warnings.warn(
+    #             f"{len(dates_present) - sum(dates_present)} of {len(dates_present)} calendar dates missing. Earliest date is {present_dates[0]}, latest is {present_dates[-1]}.",
+    #             stacklevel=2,
+    #         )
 
     def _make_query_with_sqlalchemy(self):
         sqlalchemy_columns = [
@@ -197,15 +196,9 @@ class EventTableSubset(Query):
             for column_str in self.columns
         ]
         select_stmt = select(sqlalchemy_columns)
-
-        if self.start is not None:
-            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(
-                self.sqlalchemy_table.c.datetime >= ts_start
-            )
-        if self.stop is not None:
-            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
+        select_stmt = self.date_range.filter_sqlalchemy_query(
+            select_stmt, date_column=self.sqlalchemy_table.c.datetime
+        )
 
         if self.hours != "all":
             hour_start, hour_end = self.hours
