@@ -16,8 +16,8 @@ FROM (SELECT subscriber_locs.subscriber,
                                events.calls.location_id,
                                events.calls.msisdn AS subscriber
                         FROM events.calls
-                        WHERE (events.calls.datetime >= '2016-01-01 00:00:00')
-                          AND (events.calls.datetime < '2016-01-02 00:00:00')
+                        WHERE (events.calls.datetime >= '2016-01-01')
+                          AND (events.calls.datetime < '2016-01-02')
 
                         UNION ALL
 
@@ -25,8 +25,8 @@ FROM (SELECT subscriber_locs.subscriber,
                                events.sms.location_id,
                                events.sms.msisdn AS subscriber
                         FROM events.sms
-                        WHERE (events.sms.datetime >= '2016-01-01 00:00:00')
-                          AND (events.sms.datetime < '2016-01-02 00:00:00')) AS foo
+                        WHERE (events.sms.datetime >= '2016-01-01')
+                          AND (events.sms.datetime < '2016-01-02')) AS foo
                   WHERE (location_id IS NOT NULL)
                     AND (location_id <> '')) AS l
                  INNER JOIN (SELECT location_id,
