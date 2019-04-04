@@ -43,18 +43,63 @@ def test_start_date_must_not_be_after_end_date():
         DateRange(start_date="2016-01-05", end_date="2016-01-02")
 
 
+def test_date_range_accepts_missing_start_date():
+    """
+    DateRange accepts missing start date
+    """
+    dr = DateRange(start_date=None, end_date="2016-01-06")
+    assert dr.start_date == None
+    assert dr.start_date_as_str == None
+    assert dr.end_date == dt.date(2016, 1, 6)
+    assert dr.end_date_as_str == "2016-01-06"
+    assert dr.one_day_past_end_date == dt.date(2016, 1, 7)
+    assert dr.one_day_past_end_date_as_str == "2016-01-07"
+    with pytest.raises(ValueError, match="Cannot determine length of date range"):
+        len(dr)
+
+
+def test_date_range_accepts_missing_end_date():
+    """
+    DateRange accepts missing end date
+    """
+    dr = DateRange(start_date="2016-01-04", end_date=None)
+    assert dr.start_date == dt.date(2016, 1, 4)
+    assert dr.start_date_as_str == "2016-01-04"
+    assert dr.end_date == None
+    assert dr.end_date_as_str == None
+    assert dr.one_day_past_end_date == None
+    assert dr.one_day_past_end_date_as_str == None
+    with pytest.raises(ValueError, match="Cannot determine length of date range"):
+        len(dr)
+
+
+def test_date_range_accepts_missing_start_and_end_date():
+    """
+    DateRange accepts missing start date
+    """
+    dr = DateRange(start_date=None, end_date=None)
+    assert dr.start_date == None
+    assert dr.start_date_as_str == None
+    assert dr.end_date == None
+    assert dr.end_date_as_str == None
+    assert dr.one_day_past_end_date == None
+    assert dr.one_day_past_end_date_as_str == None
+    with pytest.raises(ValueError, match="Cannot determine length of date range"):
+        len(dr)
+
+
 def test_date_range_length():
     """
     Date range knows its length (= number of days it contains).
     """
     dr = DateRange(start_date="2016-01-03", end_date="2016-01-03")
-    assert len(dr) == dr.num_days == 1
+    assert len(dr) == 1
 
     dr = DateRange(start_date="2016-01-04", end_date="2016-01-08")
-    assert len(dr) == dr.num_days == 5
+    assert len(dr) == 5
 
     dr = DateRange(start_date="2016-01-29", end_date="2016-03-05")
-    assert len(dr) == dr.num_days == 37
+    assert len(dr) == 37
 
 
 def test_one_day_past_end_date():

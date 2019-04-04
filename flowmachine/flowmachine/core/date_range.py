@@ -11,22 +11,27 @@ class DateRange:
     """
 
     def __init__(self, start_date, end_date):
-        self.start_date = self._parse_date(start_date)
-        self.end_date = self._parse_date(end_date)
-        self.start_date_as_str = self.start_date.strftime("%Y-%m-%d")
-        self.end_date_as_str = self.end_date.strftime("%Y-%m-%d")
+        self.start_date, self.start_date_as_str = self._parse_date(start_date)
+        self.end_date, self.end_date_as_str = self._parse_date(end_date)
 
-        if self.start_date > self.end_date:
+        if (
+            (self.start_date is not None)
+            and (self.end_date is not None)
+            and (self.start_date > self.end_date)
+        ):
             raise ValueError(
                 "Start date must not be after end date. "
                 f"Got: start_date={self.start_date_as_str}, end_date={self.end_date_as_str}"
             )
 
-        self.one_day_past_end_date = self.end_date + dt.timedelta(days=1)
-        self.one_day_past_end_date_as_str = self.one_day_past_end_date.strftime(
-            "%Y-%m-%d"
-        )
-        self.num_days = (self.end_date - self.start_date).days + 1
+        if self.end_date is not None:
+            self.one_day_past_end_date = self.end_date + dt.timedelta(days=1)
+            self.one_day_past_end_date_as_str = self.one_day_past_end_date.strftime(
+                "%Y-%m-%d"
+            )
+        else:
+            self.one_day_past_end_date = None
+            self.one_day_past_end_date_as_str = None
 
     def __repr__(self):
         return f"DatePeriod(start_date={self.start_date_as_str}, end_date={self.end_date_as_str})"
@@ -35,20 +40,29 @@ class DateRange:
         """
         Return number of days contained in this date range.
         """
-        return self.num_days
+        if self.start_date is not None and self.end_date is not None:
+            return (self.end_date - self.start_date).days + 1
+        else:
+            raise ValueError(
+                "Cannot determine length of date range (start date or end date is undefined)"
+            )
 
     def _parse_date(self, input_date):
-        if isinstance(input_date, dt.date):
+        if input_date is None:
+            return None, None
+        elif isinstance(input_date, dt.date):
             if isinstance(input_date, dt.datetime):
                 # Need a bit of gymnastics because dt.date is a subtype of dt.datetime
                 raise TypeError(
                     "Date must be an instance of datetime.date, but got datetime.datetime"
                 )
             else:
-                return input_date
+                return input_date, input_date.strftime("%Y-%m-%d")
+
         elif isinstance(input_date, str):
             try:
-                return dt.datetime.strptime(input_date, "%Y-%m-%d").date()
+                date = dt.datetime.strptime(input_date, "%Y-%m-%d").date()
+                return date, date.strftime("%Y-%m-%d")
             except ValueError:
                 raise ValueError(
                     f"Date string must represent a valid date in the format 'YYYY-MM-DD'. Got: '{input_date}'"
@@ -72,8 +86,9 @@ class DateRange:
         sqlalchemy.sql.selectable.Select
             The new sqlalchemy query which includes the date range filter.
         """
-        sqlalchemy_query_filtered = sqlalchemy_query.where(
-            date_column >= self.start_date_as_str
-        ).where(date_column < self.end_date_as_str)
-
-        return sqlalchemy_query_filtered
+        res = sqlalchemy_query
+        if self.start_date is not None:
+            res = res.where(date_column >= self.start_date_as_str)
+        if self.end_date is not None:
+            res = res.where(date_column < self.end_date_as_str)
+        return res
