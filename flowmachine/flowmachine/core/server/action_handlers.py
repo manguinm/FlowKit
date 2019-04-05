@@ -94,12 +94,15 @@ def action_handler__run_query(**action_params):
             status="error", msg=error_msg, payload=validation_error_messages
         )
 
+    print("[FFF] Inside action_handler__run_query()")
     q_info_lookup = QueryInfoLookup(Query.redis)
     try:
+        print("[FFF] Trying to look up query id")
         query_id = q_info_lookup.get_query_id(action_params)
     except QueryInfoLookupError:
         # Set the query running (it's safe to call this even if the query was set running before)
         try:
+            print("[FFF] Query id lookup failed. About to set query running...")
             query_id = query_obj.store_async()
         except Exception as e:
             return ZMQReply(

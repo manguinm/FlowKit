@@ -45,6 +45,7 @@ class FlowmachineQuerySchema(OneOfSchema):
     }
 
     def get_obj_type(self, obj):
+        print("[DDD] Inside FlowmachineQuerySchema.get_obj_type()")
         if isinstance(obj, DummyQueryExposed):
             return "dummy_query"
         elif isinstance(obj, DailyLocationExposed):

@@ -110,6 +110,8 @@ class BaseExposedQuery(metaclass=ABCMeta):
         # this dynamic import. There is possibly a better way to do this...
         from flowmachine.core.server.query_schemas import FlowmachineQuerySchema
 
+        print("[EEE] Inside BaseExposedQuery.query_params()")
+
         return FlowmachineQuerySchema().dump(self)
 
     def _create_query_info_lookup(self):
