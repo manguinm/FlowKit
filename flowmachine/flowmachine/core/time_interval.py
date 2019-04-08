@@ -19,6 +19,11 @@ class TimeInterval:
         self.start_as_str = self.start.strftime("%Y-%m-%d %H:%M:%S")
         self.stop_as_str = self.stop.strftime("%Y-%m-%d %H:%M:%S")
 
+        if self.start > self.stop:
+            raise ValueError("Start timestamp must not be after stop timestamp.")
+        if self.start == self.stop:
+            raise ValueError("Start timestamp must not be equal to stop timestamp.")
+
     def __repr__(self):
         return f"TimeInterval(start={self.start_as_str}, stop={self.stop_as_str})"
 
