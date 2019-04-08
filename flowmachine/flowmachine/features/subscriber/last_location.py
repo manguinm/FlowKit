@@ -15,7 +15,7 @@ from typing import List
 from flowmachine.core import Query
 from ..utilities.subscriber_locations import BaseLocation
 from ..utilities.subscriber_locations import subscriber_locations
-from flowmachine.utils import get_columns_for_level
+from flowmachine.utils import get_columns_for_level, parse_datestring
 
 
 class LastLocation(BaseLocation, Query):
@@ -106,8 +106,8 @@ class LastLocation(BaseLocation, Query):
         radius=None,
     ):
 
-        self.start = start
-        self.stop = stop
+        self.start = parse_datestring(start).strftime("%Y-%m-%d %H:%M:%S")
+        self.stop = parse_datestring(stop).strftime("%Y-%m-%d %H:%M:%S")
         self.level = level
         self.hours = hours
         self.table = table
