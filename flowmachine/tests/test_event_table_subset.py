@@ -14,30 +14,24 @@ from flowmachine.core.errors import MissingDateError
 from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
-def test_error_on_start_is_stop(get_dataframe):
+def test_error_on_start_is_stop():
     """Test that a value error is raised when start == stop"""
     with pytest.raises(ValueError):
-        EventTableSubset(start="2016-01-01", stop="2016-01-01")
+        EventTableSubset(start="2016-01-01 00:00:00", stop="2016-01-01 00:00:00")
 
 
-def test_handles_dates(get_dataframe):
+def test_missing_hours_minutes_seconds():
     """
-    Date subsetter can handle timestamp without hours or mins.
+    Date subsetter raises error if timestamp contains only the date (YYYY-MM-DD) without HH:MM:SS.
     """
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
-    df = get_dataframe(sd)
-
-    minimum = df["datetime"].min().to_pydatetime()
-    maximum = df["datetime"].max().to_pydatetime()
-
-    min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1))
-    max_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 2))
-
-    assert minimum.timestamp() > min_comparison.timestamp()
-    assert maximum.timestamp() < max_comparison.timestamp()
+    with pytest.raises(ValueError):
+        EventTableSubset(start="2016-01-01", stop="2016-01-02")
 
 
-@pytest.mark.check_available_dates
+@pytest.mark.xfail(
+    reason="The check for missing dates is currently disabled due to ongoing refactorings"
+)
+# @pytest.mark.check_available_dates
 def test_warns_on_missing():
     """
     Date subsetter should warn on missing dates.
@@ -47,7 +41,10 @@ def test_warns_on_missing():
         EventTableSubset(start="2016-01-01", stop="2016-05-02")
 
 
-@pytest.mark.check_available_dates
+@pytest.mark.xfail(
+    reason="The check for missing dates is currently disabled due to ongoing refactorings"
+)
+# @pytest.mark.check_available_dates
 def test_error_on_all_missing():
     """
     Date subsetter should error when all dates are missing.
@@ -79,7 +76,7 @@ def test_head_has_column_names(get_dataframe):
     """
     Returning the dataframe gives the expected column names.
     """
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
+    sd = EventTableSubset(start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00")
     assert [
         "country_code",
         "datetime",
@@ -101,7 +98,9 @@ def test_can_subset_by_hour(get_dataframe):
     """
     EventTableSubset can subset by a range of hours
     """
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-04", hours=(12, 17))
+    sd = EventTableSubset(
+        start="2016-01-01 00:00:00", stop="2016-01-04 00:00:00", hours=(12, 17)
+    )
     df = get_dataframe(sd)
     df["hour"] = df.datetime.apply(lambda x: x.hour)
     df["day"] = df.datetime.apply(lambda x: x.day)
@@ -117,7 +116,9 @@ def test_handles_backwards_hours(get_dataframe):
     """
     If the subscriber passes hours that are 'backwards' this will be interpreted as spanning midnight.
     """
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-04", hours=(20, 5))
+    sd = EventTableSubset(
+        start="2016-01-01 00:00:00", stop="2016-01-04 00:00:00", hours=(20, 5)
+    )
     df = get_dataframe(sd)
     df["hour"] = df.datetime.apply(lambda x: x.hour)
     df["day"] = df.datetime.apply(lambda x: x.day)
@@ -130,12 +131,18 @@ def test_handles_backwards_hours(get_dataframe):
     assert 1 in df.day
 
 
+@pytest.mark.xfail(
+    reason=(
+        "The check for missing dates is currently disabled due to ongoing refactorings, "
+        "but this test depends on it."
+    )
+)
 def test_default_dates(get_dataframe):
     """
     Test whether not passing a start and/or stop date will
     default to the min and/or max dates in the table.
     """
-    sd = EventTableSubset(start=None, stop="2016-01-04")
+    sd = EventTableSubset(start=None, stop="2016-01-04 00:00:00")
     df = get_dataframe(sd)
 
     minimum = df["datetime"].min().to_pydatetime()
@@ -150,23 +157,23 @@ def test_default_dates(get_dataframe):
     assert maximum.timestamp() < max_comparison.timestamp()
 
 
-def test_explain(get_dataframe):
+def test_explain():
     """
     EventTableSubset.explain() method returns a string
     """
 
     # Usually not a critical function, so let's simply test by
     # asserting that it returns a string
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
+    sd = EventTableSubset(start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00")
     explain_string = sd.explain()
     assert isinstance(explain_string, str)
     assert isinstance(sd.explain(analyse=True), str)
 
 
-def test_avoids_searching_extra_tables(get_dataframe):
+def test_avoids_searching_extra_tables():
     """
     EventTableSubset query doesn't look in additional partitioned tables.
     """
-    sd = EventTableSubset(start="2016-01-01", stop="2016-01-02")
+    sd = EventTableSubset(start="2016-01-01 00:00:00", stop="2016-01-02 00:00:00")
     explain_string = sd.explain()
     assert "calls_20160103" not in explain_string
