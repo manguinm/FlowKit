@@ -12,11 +12,11 @@ def test_can_get_pcods(get_dataframe):
     """
 
     subscriber_pcod = subscriber_locations(
-        "2016-01-01 13:30:30",
-        "2016-01-02 16:25:00",
+        "2016-01-01",
+        "2016-01-03",
         level="polygon",
         polygon_table="geography.admin3",
         column_name="admin3pcod",
     )
     df = get_dataframe(subscriber_pcod)
-    assert df.admin3pcod[0].startswith("524")
+    assert df.admin3pcod[0] == "524 3 08 44"

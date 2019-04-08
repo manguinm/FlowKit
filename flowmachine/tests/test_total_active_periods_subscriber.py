@@ -56,6 +56,12 @@ def test_raises_value_error_bad_unit():
         TotalActivePeriodsSubscriber("2016-01-01", 5, period_unit="microfortnight")
 
 
+@pytest.mark.xfail(
+    reason=(
+        "This test relies on being able to pass HH:MM:SS to EventTableSubset time ranges, "
+        "but this is currently not supported during refactoring."
+    )
+)
 def test_non_standard_units(get_dataframe):
     """
     flowmachine.TotalActivePeriodsSubscriber is able to handle a period_unit other
