@@ -11,18 +11,12 @@ def test_inferred_start():
     The start datetime is correctly inferred from a list of locations.
     """
     dls = [
-        daily_location(
-            "2016-01-01 18:00:00", stop="2016-01-02 06:00:00", method="most-common"
-        ),
-        daily_location(
-            "2016-01-02 18:00:00", stop="2016-01-03 06:00:00", method="most-common"
-        ),
-        daily_location(
-            "2016-01-03 18:00:00", stop="2016-01-04 06:00:00", method="most-common"
-        ),
+        daily_location("2016-01-01", stop="2016-01-02", method="most-common"),
+        daily_location("2016-01-02", stop="2016-01-03", method="most-common"),
+        daily_location("2016-01-03", stop="2016-01-04", method="most-common"),
     ]
-    hl = ModalLocation(*dls)
-    assert "2016-01-01 18:00:00" == hl.start
+    ml = ModalLocation(*dls)
+    assert "2016-01-01 00:00:00" == ml.start
 
 
 def test_inferred_start_shuffled():
@@ -30,18 +24,12 @@ def test_inferred_start_shuffled():
     The start datetime is correctly inferred from a disordered list of locations.
     """
     dls = [
-        daily_location(
-            "2016-01-01 18:00:00", stop="2016-01-02 06:00:00", method="most-common"
-        ),
-        daily_location(
-            "2016-01-02 18:00:00", stop="2016-01-03 06:00:00", method="most-common"
-        ),
-        daily_location(
-            "2016-01-03 18:00:00", stop="2016-01-04 06:00:00", method="most-common"
-        ),
+        daily_location("2016-01-03", stop="2016-01-04", method="most-common"),
+        daily_location("2016-01-02", stop="2016-01-03", method="most-common"),
+        daily_location("2016-01-01", stop="2016-01-02", method="most-common"),
     ]
-    hl = ModalLocation(*dls[::-1])
-    assert "2016-01-01 18:00:00" == hl.start
+    hl = ModalLocation(*dls)
+    assert "2016-01-01 00:00:00" == hl.start
 
 
 def test_selected_values(get_dataframe):
