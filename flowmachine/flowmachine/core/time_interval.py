@@ -28,6 +28,10 @@ class TimeInterval:
         return f"TimeInterval(start={self.start_as_str}, stop={self.stop_as_str})"
 
     def _parse_timestamp(self, input_timestamp):
+        if not isinstance(input_timestamp, str):
+            raise TypeError(
+                f"TimeInterval must be initialised with strings in the format YYYY-MM-DD HH:MM:SS"
+            )
         ts = dt.datetime.strptime(input_timestamp, "%Y-%m-%d %H:%M:%S")
         return ts
 
