@@ -13,9 +13,9 @@ class TimeInterval:
     Timestamps must be specified in the format YYYY-MM-DD HH:MM:SS.
     """
 
-    def __init__(self, start, stop):
-        self.start = self._parse_timestamp(start)
-        self.stop = self._parse_timestamp(stop)
+    def __init__(self, start, stop, *, allow_date_objects_during_refactoring=False):
+        self.start = self._parse_timestamp(start, allow_date_objects_during_refactoring)
+        self.stop = self._parse_timestamp(stop, allow_date_objects_during_refactoring)
         self.start_as_str = self.start.strftime("%Y-%m-%d %H:%M:%S")
         self.stop_as_str = self.stop.strftime("%Y-%m-%d %H:%M:%S")
 
@@ -27,7 +27,28 @@ class TimeInterval:
     def __repr__(self):
         return f"TimeInterval(start={self.start_as_str}, stop={self.stop_as_str})"
 
-    def _parse_timestamp(self, input_timestamp):
+    def _parse_timestamp(self, input_timestamp, allow_date_objects_during_refactoring):
+        if isinstance(input_timestamp, dt.date):
+            # Note: this is a temporary workaround because some classes (especially
+            # those exposed via the API) pass in datetime.date objects rather than
+            # full timestamps. We allow this if `temporarily_allow_date_objects=True`
+            # is set explicitly (and we can gradually refactor these instances in
+            # the callers).
+            if allow_date_objects_during_refactoring:
+                import structlog
+
+                logger = structlog.get_logger("flowmachine.debug", submodule=__name__)
+                logger.warning(
+                    "Temporarily allowing initialisation of TimeInterval with datetime object "
+                    "because `temporarily_allow_date_objects=True` was set."
+                )
+                input_timestamp = input_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                raise TypeError(
+                    f"Initialising TimeInterval with datetime object is not allowed by default. "
+                    "Use `temporarily_allow_date_objects=True` to enable this."
+                )
+
         if not isinstance(input_timestamp, str):
             raise TypeError(
                 f"TimeInterval must be initialised with strings in the format YYYY-MM-DD HH:MM:SS"

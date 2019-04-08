@@ -64,13 +64,28 @@ def test_must_be_initialised_with_string():
     TimeInterval raises error if initialised with a date/datetime object rather than a string.
     """
     with pytest.raises(
-        TypeError, match="TimeInterval must be initialised with strings"
+        TypeError,
+        match="Initialising TimeInterval with datetime object is not allowed by default.",
     ):
         TimeInterval(start=dt.date(2016, 1, 1), stop="2016-01-03 09:00:00")
     with pytest.raises(
-        TypeError, match="TimeInterval must be initialised with strings"
+        TypeError,
+        match="Initialising TimeInterval with datetime object is not allowed by default.",
     ):
         TimeInterval(start=dt.datetime(2016, 1, 1, 6, 0, 0), stop="2016-01-03 09:00:00")
+
+
+def test_can_be_initialised_with_date_object_if_explicit_parameter_is_set():
+    """
+    TimeInterval can be initialised with datetime.date object if `allow_date_objects_during_refactoring=True`.
+    """
+    t = TimeInterval(
+        start=dt.date(2016, 1, 1),
+        stop=dt.date(2016, 1, 3),
+        allow_date_objects_during_refactoring=True,
+    )
+    assert t.start_as_str == "2016-01-01 00:00:00"
+    assert t.stop_as_str == "2016-01-03 00:00:00"
 
 
 def test_filter_sqlalchemy_query_by_time_interval():
