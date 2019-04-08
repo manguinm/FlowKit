@@ -124,70 +124,70 @@ class EventTableSubset(Query):
 
         # This needs to happen after the parent classes init method has been
         # called as it relies upon the connection object existing
-        self._check_dates()
+        # self._check_dates()
 
     @property
     def column_names(self) -> List[str]:
         return [c.split(" AS ")[-1] for c in self.columns]
 
-    def _check_dates(self):
-
-        # Handle the logic for dealing with missing dates.
-        # If there are no dates present, then we raise an error
-        # if some are present, but some are missing we raise a
-        # warning.
-        # If the subscriber does not pass a start or stop date, then we take
-        # the min/max date in the events.calls table
-        if self.start is None:
-            d1 = self.connection.min_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
-        else:
-            d1 = self.start.split()[0]
-
-        if self.stop is None:
-            d2 = self.connection.max_date(
-                self.table_ORIG.fully_qualified_table_name.split(".")[1]
-            ).strftime("%Y-%m-%d")
-        else:
-            d2 = self.stop.split()[0]
-
-        all_dates = list_of_dates(d1, d2)
-        # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
-        # this will be interpreted as midnight, so we don't want to include this in our
-        # calculations. Check for this here, an if this is the case pop the final element
-        # of the list
-        if (self.stop is not None) and (
-            len(self.stop) == 10 or self.stop.endswith("00:00:00")
-        ):
-            all_dates.pop(-1)
-        # This will be a true false list for whether each of the dates
-        # is present in the database
-        try:
-            db_dates = [
-                d.strftime("%Y-%m-%d")
-                for d in self.connection.available_dates(
-                    table=self.table_ORIG.name,
-                    strictness=1,
-                    schema=self.table_ORIG.schema,
-                )[self.table_ORIG.name]
-            ]
-        except KeyError:  # No dates at all for this table
-            raise MissingDateError
-        dates_present = [d in db_dates for d in all_dates]
-        logger.debug(
-            f"Data for {sum(dates_present)}/{len(dates_present)} calendar dates."
-        )
-        # All dates are missing
-        if not any(dates_present):
-            raise MissingDateError
-        # Some dates are missing, others are present
-        elif not all(dates_present):
-            present_dates = [d for p, d in zip(dates_present, all_dates) if p]
-            warnings.warn(
-                f"{len(dates_present) - sum(dates_present)} of {len(dates_present)} calendar dates missing. Earliest date is {present_dates[0]}, latest is {present_dates[-1]}.",
-                stacklevel=2,
-            )
+    # def _check_dates(self):
+    #
+    #     # Handle the logic for dealing with missing dates.
+    #     # If there are no dates present, then we raise an error
+    #     # if some are present, but some are missing we raise a
+    #     # warning.
+    #     # If the subscriber does not pass a start or stop date, then we take
+    #     # the min/max date in the events.calls table
+    #     if self.start is None:
+    #         d1 = self.connection.min_date(
+    #             self.table_ORIG.fully_qualified_table_name.split(".")[1]
+    #         ).strftime("%Y-%m-%d")
+    #     else:
+    #         d1 = self.start.split()[0]
+    #
+    #     if self.stop is None:
+    #         d2 = self.connection.max_date(
+    #             self.table_ORIG.fully_qualified_table_name.split(".")[1]
+    #         ).strftime("%Y-%m-%d")
+    #     else:
+    #         d2 = self.stop.split()[0]
+    #
+    #     all_dates = list_of_dates(d1, d2)
+    #     # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
+    #     # this will be interpreted as midnight, so we don't want to include this in our
+    #     # calculations. Check for this here, an if this is the case pop the final element
+    #     # of the list
+    #     if (self.stop is not None) and (
+    #         len(self.stop) == 10 or self.stop.endswith("00:00:00")
+    #     ):
+    #         all_dates.pop(-1)
+    #     # This will be a true false list for whether each of the dates
+    #     # is present in the database
+    #     try:
+    #         db_dates = [
+    #             d.strftime("%Y-%m-%d")
+    #             for d in self.connection.available_dates(
+    #                 table=self.table_ORIG.name,
+    #                 strictness=1,
+    #                 schema=self.table_ORIG.schema,
+    #             )[self.table_ORIG.name]
+    #         ]
+    #     except KeyError:  # No dates at all for this table
+    #         raise MissingDateError
+    #     dates_present = [d in db_dates for d in all_dates]
+    #     logger.debug(
+    #         f"Data for {sum(dates_present)}/{len(dates_present)} calendar dates."
+    #     )
+    #     # All dates are missing
+    #     if not any(dates_present):
+    #         raise MissingDateError
+    #     # Some dates are missing, others are present
+    #     elif not all(dates_present):
+    #         present_dates = [d for p, d in zip(dates_present, all_dates) if p]
+    #         warnings.warn(
+    #             f"{len(dates_present) - sum(dates_present)} of {len(dates_present)} calendar dates missing. Earliest date is {present_dates[0]}, latest is {present_dates[-1]}.",
+    #             stacklevel=2,
+    #         )
 
     def _make_query_with_sqlalchemy(self):
         sqlalchemy_columns = [
