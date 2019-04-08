@@ -79,6 +79,7 @@ def test_joined_agg_date_mismatch():
         mfl.join_aggregate(RadiusOfGyration("2016-01-01", "2016-01-05"))
 
 
+@pytest.mark.xfail(reason="This test relies on HH:MM:SS in dates.")
 def test_joined_agg_hours_mismatch():
     """
     Test that join aggregate with mismatched hours doesn't warn.
