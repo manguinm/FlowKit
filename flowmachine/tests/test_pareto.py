@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-from flowmachine.features import ParetoInteractions, ContactBalance
+import pytest
 import pandas as pd
 import math
+
+from flowmachine.features import ParetoInteractions, ContactBalance
 
 
 def percent_pareto_interactions(subscriber_count, percentage=0.8):
@@ -63,6 +65,7 @@ def test_pareto_nepal(get_dataframe):
     )
 
 
+@pytest.mark.xfail(reason="This test relies on HH:MM:SS in datetimes")
 def test_pareto__call(get_dataframe):
     """
     Test that subscribers who only call themselves get pareto 1.
@@ -78,6 +81,7 @@ def test_pareto__call(get_dataframe):
     assert 1.0 == pi.value[0]
 
 
+@pytest.mark.xfail(reason="This test relies on HH:MM:SS in datetimes")
 def test_pareto__call_exclusion(get_length):
     """
     Test that subscribers who only call themselves can be excluded from pareto.
