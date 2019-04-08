@@ -80,8 +80,7 @@ def test_error_when_modal_location_not_latlong():
 
 def test_get_all_users_in_modal_location(get_dataframe):
     """
-    This tests that diplacement values are returned for all subscribers
-    in the home location object.
+    Tests that diplacement values are returned for all subscribers in the modal location object.
     """
 
     p1 = ("2016-01-02 10:00:00", "2016-01-02 12:00:00")
@@ -98,7 +97,7 @@ def test_get_all_users_in_modal_location(get_dataframe):
     ml_subscribers = set(get_dataframe(ml).subscriber)
     d_subscribers = set(get_dataframe(d).subscriber)
 
-    assert not (ml_subscribers - d_subscribers)
+    assert ml_subscribers == d_subscribers
 
 
 def test_subscriber_with_home_loc_but_no_calls_is_nan(get_dataframe):
