@@ -4,8 +4,13 @@
 
 import datetime as dt
 import pytest
+import textwrap
+from sqlalchemy import select
 
 from flowmachine.core.time_interval import TimeInterval
+from flowmachine.core.sqlalchemy_table_definitions import EventsCallsTable
+from flowmachine.core.sqlalchemy_utils import get_sql_string
+from flowmachine.utils import pretty_sql
 
 
 def test_init_with_strings():
@@ -52,3 +57,44 @@ def test_start_timestamp_must_not_equal_stop_timestamp():
         ValueError, match="Start timestamp must not be equal to stop timestamp."
     ):
         TimeInterval(start="2016-01-05 18:00:00", stop="2016-01-05 18:00:00")
+
+
+def test_filter_sqlalchemy_query_by_time_interval():
+    """
+    TimeInterval can filter a sqlalchemy query to restrict it to the given period.
+    """
+    time_interval = TimeInterval(
+        start="2016-01-03 09:10:44", stop="2017-11-28 18:17:16"
+    )
+
+    #
+    # Verify the SQL original query
+    #
+    select_stmt = select([EventsCallsTable.msisdn, EventsCallsTable.datetime])
+    sql_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn, events.calls.datetime
+            FROM events.calls
+            """
+        )
+    )
+    assert sql_expected == get_sql_string(select_stmt)
+
+    #
+    # Verify the SQL of the query filtered by dates
+    #
+    select_stmt_filtered = time_interval.filter_sqlalchemy_query(
+        select_stmt, timestamp_column=EventsCallsTable.datetime
+    )
+    sql_filtered_expected = pretty_sql(
+        textwrap.dedent(
+            """
+            SELECT events.calls.msisdn,
+                   events.calls.datetime
+            FROM events.calls
+            WHERE events.calls.datetime >= '2016-01-03 09:10:44' AND events.calls.datetime < '2017-11-28 18:17:16'
+            """
+        )
+    )
+    assert sql_filtered_expected == get_sql_string(select_stmt_filtered)

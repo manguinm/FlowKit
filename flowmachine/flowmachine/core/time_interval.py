@@ -30,3 +30,22 @@ class TimeInterval:
     def _parse_timestamp(self, input_timestamp):
         ts = dt.datetime.strptime(input_timestamp, "%Y-%m-%d %H:%M:%S")
         return ts
+
+    def filter_sqlalchemy_query(self, sqlalchemy_query, *, timestamp_column):
+        """
+        Parameters
+        ----------
+        sqlalchemy_query : sqlalchemy.sql.selectable.Select
+            The sqlalchemy query to be filtered.
+        timestamp_column : sqlalchemy.sql.schema.Column
+            The column to filter.
+
+        Returns
+        -------
+        sqlalchemy.sql.selectable.Select
+            The new sqlalchemy query which includes the timestamp filter.
+        """
+        res = sqlalchemy_query
+        res = res.where(timestamp_column >= self.start_as_str)
+        res = res.where(timestamp_column < self.stop_as_str)
+        return res
