@@ -3,21 +3,17 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import datetime
-import pandas as pd
 import warnings
 from sqlalchemy import select, between, extract, or_
 from typing import List
 
 from ...core import Query, Table
-from ...core.errors import MissingDateError
 from flowmachine.utils import _makesafe
 from ...core.sqlalchemy_utils import (
     get_sqlalchemy_table_definition,
     make_sqlalchemy_column_from_flowmachine_column_description,
     get_sql_string,
 )
-from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
 from flowmachine.core.date_range import DateRange
 
