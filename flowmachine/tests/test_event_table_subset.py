@@ -38,7 +38,7 @@ def test_warns_on_missing():
     """
     message = "115 of 122 calendar dates missing. Earliest date is 2016-01-01, latest is 2016-01-07"
     with pytest.warns(UserWarning, match=message):
-        EventTableSubset(start="2016-01-01", stop="2016-05-02")
+        EventTableSubset(start="2016-01-01 00:00:00", stop="2016-05-02 00:00:00")
 
 
 @pytest.mark.xfail(
@@ -50,9 +50,13 @@ def test_error_on_all_missing():
     Date subsetter should error when all dates are missing.
     """
     with pytest.raises(MissingDateError):
-        EventTableSubset(start="2016-05-01", stop="2016-05-02")
+        EventTableSubset(start="2016-05-01 00:00:00", stop="2016-05-02 00:00:00")
     with pytest.raises(MissingDateError):
-        EventTableSubset(start="2016-05-01", stop="2016-05-02", table="events.topups")
+        EventTableSubset(
+            start="2016-05-01 00:00:00",
+            stop="2016-05-02 00:00:00",
+            table="events.topups",
+        )
 
 
 def test_handles_mins(get_dataframe):
