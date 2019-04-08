@@ -10,7 +10,6 @@ import pytest
 from flowmachine.features import TotalLocationEvents
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 @pytest.mark.parametrize("interval", TotalLocationEvents.allowed_intervals)
 @pytest.mark.parametrize("direction", ["in", "out", "both"])
 def test_total_location_events_column_names(exemplar_level_param, interval, direction):

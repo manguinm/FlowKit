@@ -12,7 +12,6 @@ from flowmachine.features.utilities import subscriber_locations
 from flowmachine.core.errors import BadLevelError
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_unique_subscriber_counts_column_names(exemplar_level_param):
     """
     Test that column_names property of UniqueSubscriberCounts matches head(0)

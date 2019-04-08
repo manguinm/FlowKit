@@ -9,7 +9,6 @@ from flowmachine.features import EventScore
 from flowmachine.features.subscriber.label_event_score import LabelEventScore
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_labelled_event_score_column_names(
     exemplar_level_param, get_column_names_from_run
 ):

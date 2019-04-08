@@ -13,7 +13,6 @@ from flowmachine.core import JoinToLocation
 from flowmachine.features import EventScore
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_event_score_column_names(exemplar_level_param):
     if exemplar_level_param["level"] not in JoinToLocation.allowed_levels:
         pytest.skip(f'{exemplar_level_param["level"]} not valid for this test')

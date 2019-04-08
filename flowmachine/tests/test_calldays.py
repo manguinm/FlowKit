@@ -15,7 +15,6 @@ from flowmachine.features import CallDays, subscriber_locations
 import numpy as np
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_calldays_column_names(exemplar_level_param):
     """Test that CallDays column_names property is correct"""
     cd = CallDays(

@@ -11,7 +11,6 @@ import pytest
 from flowmachine.models import PopulationWeightedOpportunities
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_returns_correct_results(get_dataframe):
     """
     PopulationWeightedOpportunities().run() returns correct result set.
@@ -45,7 +44,6 @@ def test_returns_correct_results(get_dataframe):
     )
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_run_with_location_vector(get_dataframe):
     """
     PopulationWeightedOpportunities().run() takes a location probability vector.
