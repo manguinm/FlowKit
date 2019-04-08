@@ -56,7 +56,14 @@ def get_sql_string(sqlalchemy_query):
         dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
     )
     sql = str(compiled_query)
-    return pretty_sql(sql)
+    try:
+        return pretty_sql(sql)
+    except NotImplementedError:
+        # This can happen if the sql contains TABLESAMPLE or
+        # other constructs which pglast doesn't support yet.
+        # In this case we simply return the sql statement
+        # unchanged, without reformatting it.
+        return sql
 
 
 def get_query_result_as_dataframe(query, *, engine):
