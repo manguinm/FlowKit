@@ -93,7 +93,7 @@ def test_run_daily_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "success" == reply["status"]
-    assert "7401bba3acebc2c41bd9f79014bef4e9" == reply["payload"]["query_id"]
+    assert "21f765f72d17fcdc5cd9a05397a94725" == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
 
@@ -129,7 +129,7 @@ def test_run_modal_location_query(send_zmq_message_and_receive_reply):
     reply = send_zmq_message_and_receive_reply(msg)
 
     assert "success" == reply["status"]
-    assert "cf22a8a2468ab22743f9e8c3da0044db" == reply["payload"]["query_id"]
+    assert "6070164c4a3788426635f7c501819afb" == reply["payload"]["query_id"]
     assert ["query_id"] == list(reply["payload"].keys())
 
 
