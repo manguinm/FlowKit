@@ -6,6 +6,7 @@ import pandas as pd
 from sqlalchemy import Table, MetaData
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.sql import Selectable
+from flowmachine.utils import pretty_sql
 
 
 def get_sqlalchemy_table_definition(fully_qualified_table_name, *, engine):
@@ -55,7 +56,14 @@ def get_sql_string(sqlalchemy_query):
         dialect=postgresql.dialect(), compile_kwargs={"literal_binds": True}
     )
     sql = str(compiled_query)
-    return sql
+    try:
+        return pretty_sql(sql)
+    except NotImplementedError:
+        # This can happen if the sql contains TABLESAMPLE or
+        # other constructs which pglast doesn't support yet.
+        # In this case we simply return the sql statement
+        # unchanged, without reformatting it.
+        return sql
 
 
 def get_query_result_as_dataframe(query, *, engine):
