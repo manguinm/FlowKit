@@ -21,6 +21,9 @@ def test_equivalent_to_locate_subscribers(get_dataframe):
     assert (dl_df == mfl_df).all().all()
 
 
+@pytest.mark.xfail(
+    reason="Date strings must be of the format YYYY-HH-MM (and must not contain HH:MM:SS)"
+)
 def test_equivalent_to_locate_subscribers_with_time(get_dataframe):
     """
     daily_location() is equivalent to the MostFrequentLocation() with timestamps.
@@ -61,7 +64,10 @@ def test_hours(get_length):
     assert get_length(dl1) > get_length(dl2) > get_length(dl3)
 
 
-@pytest.mark.check_available_dates
+@pytest.mark.xfail(
+    reason="The check for missing dates is currently disabled due to ongoing refactorings"
+)
+# @pytest.mark.check_available_dates
 def test_daily_locs_errors():
     """
     daily_location() errors when we ask for a date that does not exist.
