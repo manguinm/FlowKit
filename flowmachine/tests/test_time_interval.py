@@ -49,7 +49,7 @@ def test_start_timestamp_must_not_be_after_stop_timestamp():
         TimeInterval(start="2016-01-05 18:00:00", stop="2016-01-03 09:00:00")
 
 
-def test_start_timestamp_must_not_equal_stop_timestamp():
+def test_start_timestamp_must_not_be_equal_to_stop_timestamp():
     """
     Start timestamp of time interval must not be equal to stop timestamp.
     """
