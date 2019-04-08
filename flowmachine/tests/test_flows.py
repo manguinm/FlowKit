@@ -11,8 +11,6 @@ from flowmachine.features import daily_location
 from flowmachine.features.location.flows import *
 from flowmachine.features.subscriber.daily_location import locate_subscribers
 
-pytestmark = pytest.mark.usefixtures("skip_datecheck")
-
 
 @pytest.mark.parametrize("query", [InFlow, OutFlow])
 def test_column_names_inout(query, exemplar_level_param):

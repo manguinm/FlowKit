@@ -6,8 +6,6 @@ from flowmachine.features.utilities.subscriber_locations import _SubscriberCells
 
 import pytest
 
-pytestmark = pytest.mark.usefixtures("skip_datecheck")
-
 
 @pytest.mark.parametrize("ignore_nulls", [True, False])
 def test_column_names(ignore_nulls):

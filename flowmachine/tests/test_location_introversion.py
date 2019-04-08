@@ -12,7 +12,6 @@ import pytest
 from flowmachine.features.location import LocationIntroversion
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_location_introversion_column_names(exemplar_level_param):
     """ Test that column_names property matches head(0)"""
     if exemplar_level_param["level"] == "versioned-site":

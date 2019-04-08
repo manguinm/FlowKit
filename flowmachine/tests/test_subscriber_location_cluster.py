@@ -28,7 +28,6 @@ from flowmachine.features import (
 )
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_hartigan_column_names(get_column_names_from_run):
     """Test that Hartigan has correct column_names property."""
     cd = CallDays(
@@ -38,7 +37,6 @@ def test_hartigan_column_names(get_column_names_from_run):
     assert get_column_names_from_run(hartigan) == hartigan.column_names
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_joined_hartigan_column_names(get_column_names_from_run):
     """Test that Hartigan has correct column_names property."""
     cd = CallDays(
@@ -56,7 +54,6 @@ def test_hartigan_type_error():
         HartiganCluster(calldays="fudge", radius=50)
 
 
-@pytest.mark.usefixtures("skip_datecheck")
 def test_joined_hartigan_type_error():
     """Test that joining hartigan to something which isn't query like raises a type error."""
     cd = CallDays(
