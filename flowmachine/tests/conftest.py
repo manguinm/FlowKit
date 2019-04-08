@@ -90,20 +90,20 @@ def pytest_itemcollected(item):
         item._nodeid += get_string_with_test_parameter_values(item)
 
 
-@pytest.fixture(autouse=True)
-def skip_datecheck(request, monkeypatch):
-    """
-    Temporarily patches EventTableSubset so that it thinks any date is
-    available, _without_ needing to touch the database. This shaves a little
-    time off every `daily_location` creation.
-
-    Use the `check_available_dates` py mark on your test to opt-in to date checking.
-    """
-    run_date_checks = request.node.get_closest_marker("check_available_dates", False)
-    if not run_date_checks:
-        monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
-
-
+# @pytest.fixture(autouse=True)
+# def skip_datecheck(request, monkeypatch):
+#     """
+#     Temporarily patches EventTableSubset so that it thinks any date is
+#     available, _without_ needing to touch the database. This shaves a little
+#     time off every `daily_location` creation.
+#
+#     Use the `check_available_dates` py mark on your test to opt-in to date checking.
+#     """
+#     run_date_checks = request.node.get_closest_marker("check_available_dates", False)
+#     # if not run_date_checks:
+#     #     monkeypatch.setattr(EventTableSubset, "_check_dates", lambda x: True)
+#
+#
 @pytest.fixture(autouse=True)
 def flowmachine_connect():
     con = flowmachine.connect()
