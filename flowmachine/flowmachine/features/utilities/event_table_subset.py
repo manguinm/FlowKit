@@ -19,6 +19,7 @@ from ...core.sqlalchemy_utils import (
 )
 from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
+from flowmachine.core.time_interval import TimeInterval
 
 import structlog
 
@@ -38,6 +39,7 @@ class EventTableSubset(Query):
     stop : str, default None
         As above. If None, it will use the latest date seen in the
         `events.calls` table.
+    time_interval : flowmachine.core.time_interval.TimeInterval
     hours : tuple of ints, default 'all'
         Subset the result within certain hours, e.g. (4,17)
         This will subset the query only with these hours, but
@@ -73,6 +75,7 @@ class EventTableSubset(Query):
         *,
         start=None,
         stop=None,
+        time_interval=None,
         hours="all",
         table="events.calls",
         subscriber_subset=None,
@@ -80,16 +83,16 @@ class EventTableSubset(Query):
         subscriber_identifier="msisdn",
     ):
 
-        # Temporary band-aid; marshmallow deserialises date strings
-        # to date objects, so we convert it back here because the
-        # lower-level classes still assume we are passing date strings.
-        if isinstance(start, datetime.date):
-            start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
-            stop = stop.strftime("%Y-%m-%d")
+        if time_interval is None and start is None and stop is None:
+            raise ValueError(
+                "Either `time_interval` or `start`/`stop` must be specified."
+            )
+        if time_interval is None:
+            self.time_interval = TimeInterval(start=start, stop=stop)
+        else:
+            assert isinstance(time_interval, TimeInterval)
+            self.time_interval = time_interval
 
-        self.start = start
-        self.stop = stop
         self.hours = hours
         self.subscriber_subset_ORIG = subscriber_subset
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
@@ -116,9 +119,6 @@ class EventTableSubset(Query):
         self.sqlalchemy_table = get_sqlalchemy_table_definition(
             self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
-
-        if self.start == self.stop:
-            raise ValueError("Start and stop are the same.")
 
         super().__init__()
 
@@ -197,15 +197,9 @@ class EventTableSubset(Query):
             for column_str in self.columns
         ]
         select_stmt = select(sqlalchemy_columns)
-
-        if self.start is not None:
-            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(
-                self.sqlalchemy_table.c.datetime >= ts_start
-            )
-        if self.stop is not None:
-            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
-            select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
+        select_stmt = self.time_interval.filter_sqlalchemy_query(
+            select_stmt, timestamp_column=self.sqlalchemy_table.c.datetime
+        )
 
         if self.hours != "all":
             hour_start, hour_end = self.hours
