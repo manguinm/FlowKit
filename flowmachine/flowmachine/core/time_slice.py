@@ -1,15 +1,67 @@
 import datetime as dt
 
 
+class FMTimestampError(Exception):
+    pass
+
+
+class FMTimestamp:
+    def __init__(self, ts):
+        if isinstance(ts, FMTimestamp):
+            self._ts = ts._ts
+        else:
+            try:
+                self._ts = dt.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+            except (TypeError, ValueError):
+                raise FMTimestampError(
+                    f"Timestamp must be a string in the format 'YYYY-MM-DD HH:MM:SS'. Got: {ts}"
+                )
+
+    @classmethod
+    def from_date(cls, date_str):
+        try:
+            ts = dt.datetime.strptime(date_str, "%Y-%m-%d")
+        except (TypeError, ValueError):
+            raise FMTimestampError(
+                f"Timestamp must be a date string in the format 'YYYY-MM-DD'. Got: {date_str}"
+            )
+        return cls(ts.strftime("%Y-%m-%d %H:%M:%S"))
+
+    def __str__(self):
+        return self._ts.strftime("%Y-%m-%d %H:%M:%S")
+
+    def as_str(self):
+        return str(self)
+
+    def __eq__(self, other):
+        if isinstance(other, dt.datetime):
+            return self._ts == other
+        elif isinstance(other, FMTimestamp):
+            return self._ts == other._ts
+        else:
+            raise FMTimestampError(
+                f"Timestamp cannot be compared to object of type {type(other)}."
+            )
+
+
+class MissingTimestamp(FMTimestamp):
+    def __init__(self):
+        pass
+
+    def __str__(self):
+        raise FMTimestampError("MissingTimestamp cannot be converted to a string.")
+
+    def as_str(self):
+        return str(self)
+
+    def __eq__(self, other):
+        raise FMTimestampError("MissingTimestamp does not allow comparison.")
+
+
 class TimeSlice:
     def __init__(self, *, start, stop):
-        assert isinstance(start, str)
-        assert isinstance(stop, str)
-
-        self.start_timestamp = dt.datetime.strptime(start, "%Y-%m-%d %H:%M:%S")
-        self.stop_timestamp = dt.datetime.strptime(stop, "%Y-%m-%d %H:%M:%S")
-        self.start_timestamp_as_str = self.start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        self.stop_timestamp_as_str = self.stop_timestamp.strftime("%Y-%m-%d %H:%M:%S")
+        self.start_timestamp = FMTimestamp(start)
+        self.stop_timestamp = FMTimestamp(stop)
 
     @classmethod
     def from_dates(cls, *, start_date, end_date):
@@ -33,22 +85,6 @@ class TimeSlice:
         end_date : str
             ISO format date string for the end of the time slice, e.g. "2016-01-07".
         """
-        ts_start_date = cls._parse_date_as_timestamp(start_date)
-        ts_end_date = cls._parse_date_as_timestamp(end_date)
-
-        start_timestamp = ts_start_date
-        stop_timestamp = ts_end_date
-        # stop_timestamp = ts_end_date + dt.timedelta(days=1)  # TODO: re-enable this after refactoring is done
-
-        # TODO: once TimeSlice supports initialisation directly from timestamps
-        # we can remove this and pass start_timestamp/stop_timestamp directly to
-        # TimeSlice.__init__()
-        start_str = start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-        stop_str = stop_timestamp.strftime("%Y-%m-%d %H:%M:%S")
-
-        return TimeSlice(start=start_str, stop=stop_str)
-
-    @classmethod
-    def _parse_date_as_timestamp(cls, date_str):
-        assert isinstance(date_str, str)
-        return dt.datetime.strptime(date_str, "%Y-%m-%d")
+        ts_start_date = FMTimestamp.from_date(start_date)
+        ts_end_date = FMTimestamp.from_date(end_date)
+        return cls(start=ts_start_date, stop=ts_end_date)
