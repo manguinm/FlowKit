@@ -91,8 +91,9 @@ def test_parse_legacy_input():
         FMTimestamp.from_legacy_input("2016/03/14")
     with pytest.raises(FMTimestampError, match="Could not parse legacy input"):
         FMTimestamp.from_legacy_input(42)
-    with pytest.raises(FMTimestampError, match="Could not parse legacy input"):
-        FMTimestamp.from_legacy_input(None)
+
+    mts = FMTimestamp.from_legacy_input(None)
+    assert mts.is_missing == True
 
 
 #

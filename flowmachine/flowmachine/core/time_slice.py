@@ -39,7 +39,9 @@ class FMTimestamp:
     def from_legacy_input(cls, x):
         error_msg = f"Could not parse legacy input: '{x}' (type: {type(x)})"
 
-        if isinstance(x, FMTimestamp):
+        if x is None:
+            return MissingTimestamp()
+        elif isinstance(x, FMTimestamp):
             return x
         elif isinstance(x, dt.date):  # note: this includes dt.datetime objects
             return FMTimestamp(x.strftime("%Y-%m-%d %H:%M:%S"))
