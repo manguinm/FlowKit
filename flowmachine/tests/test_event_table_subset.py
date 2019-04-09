@@ -154,12 +154,10 @@ def test_explain(get_dataframe):
     """
     EventTableSubset().explain() method returns a string
     """
-
     # Usually not a critical function, so let's simply test by
     # asserting that it returns a string
     sd = EventTableSubset("2016-01-01", "2016-01-02")
-    explain_string = sd.explain()
-    assert isinstance(explain_string, str)
+    assert isinstance(sd.explain(), str)
     assert isinstance(sd.explain(analyse=True), str)
 
 
