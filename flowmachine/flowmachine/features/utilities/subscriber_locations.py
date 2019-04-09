@@ -37,6 +37,7 @@ class _SubscriberCells(Query):
         ignore_nulls=True,
         *,
         subscriber_subset=None,
+        allow_date_objects_during_refactoring=False,
     ):
 
         self.start = start
@@ -58,6 +59,7 @@ class _SubscriberCells(Query):
             hours=self.hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=self.subscriber_identifier,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
         super().__init__()
 
@@ -132,6 +134,7 @@ def subscriber_locations(
     polygon_table=None,
     size=None,
     radius=None,
+    allow_date_objects_during_refactoring=False,
 ):
     """
     Class representing all the locations for which a subscriber has been found.
@@ -219,6 +222,7 @@ def subscriber_locations(
         subscriber_subset=subscriber_subset,
         subscriber_identifier=subscriber_identifier,
         ignore_nulls=ignore_nulls,
+        allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
     )
 
     if level == "cell":

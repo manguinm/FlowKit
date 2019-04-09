@@ -104,6 +104,7 @@ class LastLocation(BaseLocation, Query):
         polygon_table=None,
         size=None,
         radius=None,
+        allow_date_objects_during_refactoring=False,
     ):
 
         self.start = parse_datestring(start).strftime("%Y-%m-%d %H:%M:%S")
@@ -126,6 +127,7 @@ class LastLocation(BaseLocation, Query):
             polygon_table=polygon_table,
             size=size,
             radius=radius,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
         super().__init__()
 

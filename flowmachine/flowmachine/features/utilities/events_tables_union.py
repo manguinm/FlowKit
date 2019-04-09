@@ -49,6 +49,7 @@ class EventsTablesUnion(Query):
         hours="all",
         subscriber_subset=None,
         subscriber_identifier="msisdn",
+        allow_date_objects_during_refactoring=False,
     ):
         """
 
@@ -71,6 +72,7 @@ class EventsTablesUnion(Query):
             hours=hours,
             subscriber_subset=subscriber_subset,
             subscriber_identifier=subscriber_identifier,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
 
         super().__init__()
@@ -89,7 +91,14 @@ class EventsTablesUnion(Query):
         else:
             return tables
 
-    def _make_table_list(self, *, hours, subscriber_subset, subscriber_identifier):
+    def _make_table_list(
+        self,
+        *,
+        hours,
+        subscriber_subset,
+        subscriber_identifier,
+        allow_date_objects_during_refactoring,
+    ):
         """
         Makes a list of EventTableSubset queries.
         """
@@ -105,6 +114,7 @@ class EventsTablesUnion(Query):
                     hours=hours,
                     subscriber_subset=subscriber_subset,
                     subscriber_identifier=subscriber_identifier,
+                    allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
                 )
                 date_subsets.append(sql)
             except MissingDateError:

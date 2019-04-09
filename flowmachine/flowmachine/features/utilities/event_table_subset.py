@@ -81,6 +81,7 @@ class EventTableSubset(Query):
         subscriber_subset=None,
         columns=["*"],
         subscriber_identifier="msisdn",
+        allow_date_objects_during_refactoring=False,
     ):
 
         if time_interval is None and start is None and stop is None:
@@ -88,7 +89,11 @@ class EventTableSubset(Query):
                 "Either `time_interval` or `start`/`stop` must be specified."
             )
         if time_interval is None:
-            self.time_interval = TimeInterval(start=start, stop=stop)
+            self.time_interval = TimeInterval(
+                start=start,
+                stop=stop,
+                allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
+            )
         else:
             assert isinstance(time_interval, TimeInterval)
             self.time_interval = time_interval

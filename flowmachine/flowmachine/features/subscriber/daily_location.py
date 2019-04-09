@@ -32,6 +32,7 @@ def locate_subscribers(
     polygon_table=None,
     size=None,
     radius=None,
+    allow_date_objects_during_refactoring=False,
 ):
     """
     Return a class representing the location of an individual. This can be called
@@ -137,6 +138,7 @@ def locate_subscribers(
             polygon_table=polygon_table,
             size=size,
             radius=radius,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
     elif method == "most-common":
         return MostFrequentLocation(
@@ -152,6 +154,7 @@ def locate_subscribers(
             polygon_table=polygon_table,
             size=size,
             radius=radius,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
     # elif self.method == 'first':
     #     _obj = FirstLocation(start, stop, level, hours)
@@ -176,6 +179,7 @@ def daily_location(
     polygon_table=None,
     size=None,
     radius=None,
+    allow_date_objects_during_refactoring=False,
 ):
     """
     Return a query for locating all subscribers on a single day of data.
@@ -273,4 +277,5 @@ def daily_location(
         polygon_table=polygon_table,
         size=size,
         radius=radius,
+        allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
     )

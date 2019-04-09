@@ -103,6 +103,7 @@ class MostFrequentLocation(BaseLocation, Query):
         polygon_table=None,
         size=None,
         radius=None,
+        allow_date_objects_during_refactoring=False,
     ):
         """
 
@@ -129,6 +130,7 @@ class MostFrequentLocation(BaseLocation, Query):
             polygon_table=polygon_table,
             size=size,
             radius=radius,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
         )
 
         super().__init__()
