@@ -39,6 +39,8 @@ class FMTimestamp:
     def from_legacy_input(cls, x):
         if isinstance(x, FMTimestamp):
             return x
+        elif isinstance(x, dt.date):  # note: this includes dt.datetime objects
+            return FMTimestamp(x.strftime("%Y-%m-%d %H:%M:%S"))
         elif isinstance(x, str):
             try:
                 return FMTimestamp.from_date(x)

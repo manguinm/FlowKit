@@ -76,6 +76,12 @@ def test_parse_legacy_input():
     ts = FMTimestamp.from_legacy_input("2016-03-14")
     assert ts.as_str() == "2016-03-14 00:00:00"
 
+    ts = FMTimestamp.from_legacy_input(dt.date(2016, 8, 17))
+    assert ts.as_str() == "2016-08-17 00:00:00"
+
+    ts = FMTimestamp.from_legacy_input(dt.datetime(2016, 8, 17, 14, 1, 5))
+    assert ts.as_str() == "2016-08-17 14:01:05"
+
     ts1 = FMTimestamp.from_legacy_input("2016-01-01 14:15:16")
     ts2 = FMTimestamp.from_legacy_input(ts1)
     assert ts1.as_str() == "2016-01-01 14:15:16"
