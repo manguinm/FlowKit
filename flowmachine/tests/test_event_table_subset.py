@@ -99,7 +99,7 @@ def test_head_has_column_names(get_dataframe):
 
 def test_can_subset_by_hour(get_dataframe):
     """
-    EventTableSubset() can subset by a range of hours
+    EventTableSubset can subset by a range of hours
     """
     sd = EventTableSubset("2016-01-01", "2016-01-04", hours=(12, 17))
     df = get_dataframe(sd)
@@ -163,7 +163,7 @@ def test_explain():
 
 def test_avoids_searching_extra_tables():
     """
-    EventTableSubset() query doesn't look in additional partitioned tables.
+    EventTableSubset query doesn't look in additional partitioned tables.
     """
     sd = EventTableSubset("2016-01-01", "2016-01-02")
     explain_string = sd.explain()
