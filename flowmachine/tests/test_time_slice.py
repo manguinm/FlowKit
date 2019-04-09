@@ -69,6 +69,26 @@ def test_fm_timestamp():
         ts3 == "foobar"
 
 
+def test_parse_legacy_input():
+    ts = FMTimestamp.from_legacy_input("2016-05-15 18:52:46")
+    assert ts.as_str() == "2016-05-15 18:52:46"
+
+    ts = FMTimestamp.from_legacy_input("2016-03-14")
+    assert ts.as_str() == "2016-03-14 00:00:00"
+
+    ts1 = FMTimestamp.from_legacy_input("2016-01-01 14:15:16")
+    ts2 = FMTimestamp.from_legacy_input(ts1)
+    assert ts1.as_str() == "2016-01-01 14:15:16"
+    assert ts2.as_str() == "2016-01-01 14:15:16"
+
+    with pytest.raises(FMTimestampError, match="Could not parse legacy input"):
+        FMTimestamp.from_legacy_input("2016/03/14")
+    with pytest.raises(FMTimestampError, match="Could not parse legacy input"):
+        FMTimestamp.from_legacy_input(42)
+    with pytest.raises(FMTimestampError, match="Could not parse legacy input"):
+        FMTimestamp.from_legacy_input(None)
+
+
 #
 # TODO: the following test contains the behaviour we would *like* to have at the end of this refactoring,
 #       but during the refactoring we make it behave like the existing EventTableSubset.
@@ -89,6 +109,14 @@ def test_init_with_start_and_end_dates():
     Start timestamp is midnight at the beginning of start_date and end timestamp is midnight at the beginning of `end_date`.
     """
     ts = TimeSlice.from_dates(start_date="2016-01-01", end_date="2017-09-23")
+    assert ts.start_timestamp == dt.datetime(2016, 1, 1, 0, 0, 0)
+    assert ts.start_timestamp.as_str() == "2016-01-01 00:00:00"
+    assert ts.stop_timestamp == dt.datetime(2017, 9, 23, 0, 0, 0)
+    assert ts.stop_timestamp.as_str() == "2017-09-23 00:00:00"
+
+
+def test_init_by_parsing_legacy_input():
+    ts = TimeSlice.from_legacy_input(start="2016-01-01", stop="2017-09-23")
     assert ts.start_timestamp == dt.datetime(2016, 1, 1, 0, 0, 0)
     assert ts.start_timestamp.as_str() == "2016-01-01 00:00:00"
     assert ts.stop_timestamp == dt.datetime(2017, 9, 23, 0, 0, 0)

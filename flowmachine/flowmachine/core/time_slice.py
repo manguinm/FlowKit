@@ -13,6 +13,7 @@ class FMTimestamp:
             raise FMTimestampError(
                 f"Timestamp must be a string in the format 'YYYY-MM-DD HH:MM:SS'. Got: '{ts}' (type: {type(ts)})"
             )
+        self.is_missing = False
 
     @classmethod
     def from_date(cls, date_str):
@@ -33,6 +34,21 @@ class FMTimestamp:
             return x
         else:
             return FMTimestamp(x)
+
+    @classmethod
+    def from_legacy_input(cls, x):
+        if isinstance(x, FMTimestamp):
+            return x
+        elif isinstance(x, str):
+            try:
+                return FMTimestamp.from_date(x)
+            except FMTimestampError:
+                try:
+                    return FMTimestamp(x)
+                except FMTimestampError:
+                    raise FMTimestampError(f"Could not parse legacy input: {x}")
+        else:
+            raise FMTimestampError(f"Could not parse legacy input: {x}")
 
     def __str__(self):
         return self._ts.strftime("%Y-%m-%d %H:%M:%S")
@@ -70,9 +86,19 @@ class MissingTimestamp(FMTimestamp):
 
 
 class TimeSlice:
-    def __init__(self, *, start, stop):
-        self.start_timestamp = FMTimestamp.from_any_input(start)
-        self.stop_timestamp = FMTimestamp.from_any_input(stop)
+    def __init__(self, *, start, stop, parse_legacy_input=False):
+        if parse_legacy_input:
+            # This is a temporary workaround during refactoring, because a lot of query classes
+            # pass in date/datetime objects in various formats.
+            self.start_timestamp = FMTimestamp.from_legacy_input(start)
+            self.stop_timestamp = FMTimestamp.from_legacy_input(stop)
+        else:
+            self.start_timestamp = FMTimestamp.from_any_input(start)
+            self.stop_timestamp = FMTimestamp.from_any_input(stop)
+
+    @classmethod
+    def from_legacy_input(cls, *, start, stop):
+        return cls(start=start, stop=stop, parse_legacy_input=True)
 
     @classmethod
     def from_dates(cls, *, start_date, end_date):
