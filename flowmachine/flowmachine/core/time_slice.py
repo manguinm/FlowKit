@@ -96,6 +96,9 @@ class TimeSlice:
             self.start_timestamp = FMTimestamp.from_any_input(start)
             self.stop_timestamp = FMTimestamp.from_any_input(stop)
 
+    def __repr__(self):
+        return f"TimeSlice(start={self.start_timestamp.as_str()!r}, stop={self.stop_timestamp.as_str()!r})"
+
     @classmethod
     def from_legacy_input(cls, *, start, stop):
         return cls(start=start, stop=stop, parse_legacy_input=True)

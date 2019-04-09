@@ -113,6 +113,9 @@ def test_init_with_start_and_end_dates():
     assert ts.start_timestamp.as_str() == "2016-01-01 00:00:00"
     assert ts.stop_timestamp == dt.datetime(2017, 9, 23, 0, 0, 0)
     assert ts.stop_timestamp.as_str() == "2017-09-23 00:00:00"
+    assert (
+        repr(ts) == "TimeSlice(start='2016-01-01 00:00:00', stop='2017-09-23 00:00:00')"
+    )
 
 
 def test_init_by_parsing_legacy_input():
@@ -121,6 +124,9 @@ def test_init_by_parsing_legacy_input():
     assert ts.start_timestamp.as_str() == "2016-01-01 00:00:00"
     assert ts.stop_timestamp == dt.datetime(2017, 9, 23, 0, 0, 0)
     assert ts.stop_timestamp.as_str() == "2017-09-23 00:00:00"
+    assert (
+        repr(ts) == "TimeSlice(start='2016-01-01 00:00:00', stop='2017-09-23 00:00:00')"
+    )
 
 
 def test_start_and_end_date_can_be_missing():
