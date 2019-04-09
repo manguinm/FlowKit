@@ -24,7 +24,8 @@ class TimeSlice:
         ts_end_date = self._parse_date_as_timestamp(end_date)
 
         self.start_timestamp = ts_start_date
-        self.stop_timestamp = ts_end_date + dt.timedelta(days=1)
+        self.stop_timestamp = ts_end_date
+        # self.stop_timestamp = ts_end_date + dt.timedelta(days=1)
         self.start_timestamp_as_str = self.start_timestamp.strftime("%Y-%m-%d %H:%M:%S")
         self.stop_timestamp_as_str = self.stop_timestamp.strftime("%Y-%m-%d %H:%M:%S")
 
