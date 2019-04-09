@@ -91,16 +91,6 @@ class EventTableSubset(Query):
             assert isinstance(time_slice, TimeSlice)
             self.time_slice = time_slice
 
-        # Temporary band-aid; marshmallow deserialises date strings
-        # to date objects, so we convert it back here because the
-        # lower-level classes still assume we are passing date strings.
-        if isinstance(start, datetime.date):
-            start = start.strftime("%Y-%m-%d")
-        if isinstance(stop, datetime.date):
-            stop = stop.strftime("%Y-%m-%d")
-
-        self.start = start
-        self.stop = stop
         self.hours = hours
         self.subscriber_subset_ORIG = subscriber_subset
         self.subscriber_subsetter = make_subscriber_subsetter(subscriber_subset)
@@ -128,9 +118,6 @@ class EventTableSubset(Query):
             self.table_ORIG.fully_qualified_table_name, engine=Query.connection.engine
         )
 
-        if self.start == self.stop:
-            raise ValueError("Start and stop are the same.")
-
         super().__init__()
 
         # This needs to happen after the parent classes init method has been
@@ -149,27 +136,27 @@ class EventTableSubset(Query):
         # warning.
         # If the subscriber does not pass a start or stop date, then we take
         # the min/max date in the events.calls table
-        if self.start is None:
+        if self.time_slice.start_timestamp.is_missing:
             d1 = self.connection.min_date(
                 self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
-            d1 = self.start.split()[0]
+            d1 = self.time_slice.start_timestamp.as_str().split()[0]
 
-        if self.stop is None:
+        if self.time_slice.stop_timestamp.is_missing:
             d2 = self.connection.max_date(
                 self.table_ORIG.fully_qualified_table_name.split(".")[1]
             ).strftime("%Y-%m-%d")
         else:
-            d2 = self.stop.split()[0]
+            d2 = self.time_slice.stop_timestamp.as_str().split()[0]
 
         all_dates = list_of_dates(d1, d2)
         # Slightly annoying feature, but if the subscriber passes a date such as '2016-01-02'
         # this will be interpreted as midnight, so we don't want to include this in our
         # calculations. Check for this here, an if this is the case pop the final element
         # of the list
-        if (self.stop is not None) and (
-            len(self.stop) == 10 or self.stop.endswith("00:00:00")
+        if not self.time_slice.stop_timestamp.is_missing and self.time_slice.stop_timestamp.as_str().endswith(
+            "00:00:00"
         ):
             all_dates.pop(-1)
         # This will be a true false list for whether each of the dates
@@ -209,13 +196,13 @@ class EventTableSubset(Query):
         ]
         select_stmt = select(sqlalchemy_columns)
 
-        if self.start is not None:
-            ts_start = pd.Timestamp(self.start).strftime("%Y-%m-%d %H:%M:%S")
+        if not self.time_slice.start_timestamp.is_missing:
+            ts_start = self.time_slice.start_timestamp.as_str()
             select_stmt = select_stmt.where(
                 self.sqlalchemy_table.c.datetime >= ts_start
             )
-        if self.stop is not None:
-            ts_stop = pd.Timestamp(self.stop).strftime("%Y-%m-%d %H:%M:%S")
+        if not self.time_slice.stop_timestamp.is_missing:
+            ts_stop = self.time_slice.stop_timestamp.as_str()
             select_stmt = select_stmt.where(self.sqlalchemy_table.c.datetime < ts_stop)
 
         if self.hours != "all":
@@ -249,11 +236,13 @@ class EventTableSubset(Query):
         # The one currently being used is _make_query_with_sqlalchemy above.
 
         where_clause = ""
-        if self.start is not None:
-            where_clause += f"WHERE (datetime >= '{self.start}'::timestamptz)"
-        if self.stop is not None:
+        if not self.time_slice.start_timestamp.is_missing:
+            where_clause += f"WHERE (datetime >= '{self.time_slice.start_timestamp.as_str()}'::timestamptz)"
+        if not self.time_slice.stop_timestamp.is_missing:
             where_clause += "WHERE " if where_clause == "" else " AND "
-            where_clause += f"(datetime < '{self.stop}'::timestamptz)"
+            where_clause += (
+                f"(datetime < '{self.time_slice.stop_timestamp.as_str()}'::timestamptz)"
+            )
 
         sql = f"""
         SELECT {", ".join(self.columns)}
