@@ -88,7 +88,12 @@ class MissingTimestamp(FMTimestamp):
         return str(self)
 
     def __eq__(self, other):
-        raise FMTimestampError("MissingTimestamp does not allow comparison.")
+        if isinstance(other, FMTimestamp):
+            return False
+        else:
+            raise FMTimestampError(
+                f"MissingTimestamp cannot be compared to object of type {type(other)}."
+            )
 
 
 class TimeSlice:

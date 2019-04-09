@@ -38,6 +38,11 @@ def test_fm_timestamp():
     assert ts1 != ts2
 
     ts3 = MissingTimestamp()
+    assert ts1 != ts3
+    assert ts2 != ts3
+    assert ts3 != ts3
+    assert ts3 != ts2
+    assert ts3 != ts1
     with pytest.raises(
         FMTimestampError, match="MissingTimestamp cannot be converted to a string."
     ):
@@ -47,24 +52,13 @@ def test_fm_timestamp():
     ):
         str(ts3)
     with pytest.raises(
-        FMTimestampError, match="MissingTimestamp does not allow comparison."
-    ):
-        ts1 == ts3
-    with pytest.raises(
-        FMTimestampError, match="MissingTimestamp does not allow comparison."
-    ):
-        ts3 == ts1
-    with pytest.raises(
-        FMTimestampError, match="MissingTimestamp does not allow comparison."
-    ):
-        ts3 == ts3
-    with pytest.raises(
         FMTimestampError,
         match="Timestamp cannot be compared to object of type <class 'str'>.",
     ):
         ts1 == "foobar"
     with pytest.raises(
-        FMTimestampError, match="MissingTimestamp does not allow comparison."
+        FMTimestampError,
+        match="MissingTimestamp cannot be compared to object of type <class 'str'>.",
     ):
         ts3 == "foobar"
 
