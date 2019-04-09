@@ -37,6 +37,8 @@ class FMTimestamp:
 
     @classmethod
     def from_legacy_input(cls, x):
+        error_msg = f"Could not parse legacy input: '{x}' (type: {type(x)})"
+
         if isinstance(x, FMTimestamp):
             return x
         elif isinstance(x, dt.date):  # note: this includes dt.datetime objects
@@ -48,9 +50,9 @@ class FMTimestamp:
                 try:
                     return FMTimestamp(x)
                 except FMTimestampError:
-                    raise FMTimestampError(f"Could not parse legacy input: {x}")
+                    raise FMTimestampError(error_msg)
         else:
-            raise FMTimestampError(f"Could not parse legacy input: {x}")
+            raise FMTimestampError(error_msg)
 
     def __str__(self):
         return self._ts.strftime("%Y-%m-%d %H:%M:%S")
