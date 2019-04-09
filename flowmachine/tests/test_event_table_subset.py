@@ -11,20 +11,33 @@ import pytz
 from datetime import datetime
 
 from flowmachine.core.errors import MissingDateError
+from flowmachine.core.time_slice import TimeSlice
 from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
 def test_error_on_start_is_stop():
-    """Test that a value error is raised when start == stop"""
-    with pytest.raises(ValueError):
-        EventTableSubset("2016-01-01", "2016-01-01")
+    """
+    Test that a value error is raised when start == stop
+    """
+    with pytest.raises(ValueError, match="Start and stop are the same"):
+        EventTableSubset(
+            start="2016-01-01",
+            stop="2016-01-01",
+            time_slice=TimeSlice.from_dates(
+                start_date="2016-01-01", end_date="2016-01-01"
+            ),
+        )
 
 
 def test_handles_dates(get_dataframe):
     """
     Date subsetter can handle timestamp without hours or mins.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-02"),
+    )
     df = get_dataframe(sd)
 
     minimum = df["datetime"].min().to_pydatetime()
@@ -44,7 +57,13 @@ def test_warns_on_missing():
     """
     message = "115 of 122 calendar dates missing. Earliest date is 2016-01-01, latest is 2016-01-07"
     with pytest.warns(UserWarning, match=message):
-        EventTableSubset("2016-01-01", "2016-05-02")
+        EventTableSubset(
+            start="2016-01-01",
+            stop="2016-05-02",
+            time_slice=TimeSlice.from_dates(
+                start_date="2016-01-01", end_date="2016-05-02"
+            ),
+        )
 
 
 @pytest.mark.check_available_dates
@@ -53,16 +72,33 @@ def test_error_on_all_missing():
     Date subsetter should error when all dates are missing.
     """
     with pytest.raises(MissingDateError):
-        EventTableSubset("2016-05-01", "2016-05-02")
+        EventTableSubset(
+            start="2016-05-01",
+            stop="2016-05-02",
+            time_slice=TimeSlice.from_dates(
+                start_date="2016-05-01", end_date="2016-05-02"
+            ),
+        )
     with pytest.raises(MissingDateError):
-        EventTableSubset("2016-05-01", "2016-05-02", table="events.topups")
+        EventTableSubset(
+            start="2016-05-01",
+            stop="2016-05-02",
+            time_slice=TimeSlice.from_dates(
+                start_date="2016-05-01", end_date="2016-05-02"
+            ),
+            table="events.topups",
+        )
 
 
 def test_handles_mins(get_dataframe):
     """
     Date subsetter can handle timestamps including the times.
     """
-    sd = EventTableSubset("2016-01-01 13:30:30", "2016-01-02 16:25:00")
+    sd = EventTableSubset(
+        start="2016-01-01 13:30:30",
+        stop="2016-01-02 16:25:00",
+        time_slice=TimeSlice(start="2016-01-01 13:30:30", stop="2016-01-02 16:25:00"),
+    )
     df = get_dataframe(sd)
 
     minimum = df["datetime"].min().to_pydatetime()
@@ -79,7 +115,11 @@ def test_head_has_column_names(get_dataframe):
     """
     Returning the dataframe gives the expected column names.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-02"),
+    )
     assert [
         "country_code",
         "datetime",
@@ -101,7 +141,12 @@ def test_can_subset_by_hour(get_dataframe):
     """
     EventTableSubset can subset by a range of hours
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-04", hours=(12, 17))
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-04",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-04"),
+        hours=(12, 17),
+    )
     df = get_dataframe(sd)
     df["hour"] = df.datetime.apply(lambda x: x.hour)
     df["day"] = df.datetime.apply(lambda x: x.day)
@@ -117,7 +162,12 @@ def test_handles_backwards_hours(get_dataframe):
     """
     If the subscriber passes hours that are 'backwards' this will be interpreted as spanning midnight.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-04", hours=(20, 5))
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-04",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-04"),
+        hours=(20, 5),
+    )
     df = get_dataframe(sd)
     df["hour"] = df.datetime.apply(lambda x: x.hour)
     df["day"] = df.datetime.apply(lambda x: x.day)
@@ -135,14 +185,23 @@ def test_default_dates(get_dataframe):
     Test whether not passing a start and/or stop date will
     default to the min and/or max dates in the table.
     """
-    sd = EventTableSubset(None, "2016-01-04")
+    sd = EventTableSubset(
+        start=None,
+        stop="2016-01-04",
+        time_slice=TimeSlice.from_dates(start_date=None, end_date="2016-01-04"),
+    )
     df = get_dataframe(sd)
 
     minimum = df["datetime"].min().to_pydatetime()
     min_comparison = pytz.timezone("Etc/UTC").localize(datetime(2016, 1, 1, 0, 0, 0))
     assert minimum.timestamp() > min_comparison.timestamp()
 
-    sd = EventTableSubset("2016-01-04", None, hours=(20, 5))
+    sd = EventTableSubset(
+        start="2016-01-04",
+        stop=None,
+        time_slice=TimeSlice.from_dates(start_date="2016-01-04", end_date=None),
+        hours=(20, 5),
+    )
     df = get_dataframe(sd)
 
     maximum = df["datetime"].max().to_pydatetime()
@@ -156,7 +215,11 @@ def test_explain():
     """
     # Usually not a critical function, so let's simply test by
     # asserting that it returns a string
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-02"),
+    )
     assert isinstance(sd.explain(), str)
     assert isinstance(sd.explain(analyse=True), str)
 
@@ -165,6 +228,10 @@ def test_avoids_searching_extra_tables():
     """
     EventTableSubset query doesn't look in additional partitioned tables.
     """
-    sd = EventTableSubset("2016-01-01", "2016-01-02")
+    sd = EventTableSubset(
+        start="2016-01-01",
+        stop="2016-01-02",
+        time_slice=TimeSlice.from_dates(start_date="2016-01-01", end_date="2016-01-02"),
+    )
     explain_string = sd.explain()
     assert "calls_20160103" not in explain_string
