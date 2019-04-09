@@ -7,25 +7,32 @@ class FMTimestampError(Exception):
 
 class FMTimestamp:
     def __init__(self, ts):
-        if isinstance(ts, FMTimestamp):
-            self._ts = ts._ts
-        else:
-            try:
-                self._ts = dt.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
-            except (TypeError, ValueError):
-                raise FMTimestampError(
-                    f"Timestamp must be a string in the format 'YYYY-MM-DD HH:MM:SS'. Got: {ts}"
-                )
+        try:
+            self._ts = dt.datetime.strptime(ts, "%Y-%m-%d %H:%M:%S")
+        except (TypeError, ValueError):
+            raise FMTimestampError(
+                f"Timestamp must be a string in the format 'YYYY-MM-DD HH:MM:SS'. Got: '{ts}' (type: {type(ts)})"
+            )
 
     @classmethod
     def from_date(cls, date_str):
-        try:
-            ts = dt.datetime.strptime(date_str, "%Y-%m-%d")
-        except (TypeError, ValueError):
-            raise FMTimestampError(
-                f"Timestamp must be a date string in the format 'YYYY-MM-DD'. Got: {date_str}"
-            )
-        return cls(ts.strftime("%Y-%m-%d %H:%M:%S"))
+        if date_str is None:
+            return MissingTimestamp()
+        else:
+            try:
+                ts = dt.datetime.strptime(date_str, "%Y-%m-%d")
+                return cls(ts.strftime("%Y-%m-%d %H:%M:%S"))
+            except (TypeError, ValueError):
+                raise FMTimestampError(
+                    f"Timestamp must be a date string in the format 'YYYY-MM-DD'. Got: {date_str}"
+                )
+
+    @classmethod
+    def from_any_input(cls, x):
+        if isinstance(x, FMTimestamp):
+            return x
+        else:
+            return FMTimestamp(x)
 
     def __str__(self):
         return self._ts.strftime("%Y-%m-%d %H:%M:%S")
@@ -45,8 +52,12 @@ class FMTimestamp:
 
 
 class MissingTimestamp(FMTimestamp):
+    """
+    Represents a missing timestamp.
+    """
+
     def __init__(self):
-        pass
+        self.is_missing = True
 
     def __str__(self):
         raise FMTimestampError("MissingTimestamp cannot be converted to a string.")
@@ -60,8 +71,8 @@ class MissingTimestamp(FMTimestamp):
 
 class TimeSlice:
     def __init__(self, *, start, stop):
-        self.start_timestamp = FMTimestamp(start)
-        self.stop_timestamp = FMTimestamp(stop)
+        self.start_timestamp = FMTimestamp.from_any_input(start)
+        self.stop_timestamp = FMTimestamp.from_any_input(stop)
 
     @classmethod
     def from_dates(cls, *, start_date, end_date):

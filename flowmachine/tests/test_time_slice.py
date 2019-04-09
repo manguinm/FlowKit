@@ -13,15 +13,19 @@ def test_fm_timestamp():
     ts = FMTimestamp("2016-01-03 11:22:33")
     assert ts == dt.datetime(2016, 1, 3, 11, 22, 33)
     assert ts.as_str() == "2016-01-03 11:22:33"
-
-    ts1 = FMTimestamp("2016-05-09 23:59:31")
-    ts2 = FMTimestamp(ts1)
-    assert ts1 == dt.datetime(2016, 5, 9, 23, 59, 31)
-    assert ts2 == dt.datetime(2016, 5, 9, 23, 59, 31)
+    assert ts.is_missing == False
 
     ts = FMTimestamp.from_date("2016-05-12")
     assert ts == dt.datetime(2016, 5, 12, 0, 0, 0)
     assert ts.as_str() == "2016-05-12 00:00:00"
+
+    ts1 = FMTimestamp.from_any_input("2016-05-15 18:52:46")
+    ts2 = FMTimestamp.from_any_input(ts1)
+    assert ts1 == dt.datetime(2016, 5, 15, 18, 52, 46)
+    assert ts2 == dt.datetime(2016, 5, 15, 18, 52, 46)
+
+    ts = FMTimestamp.from_date(None)
+    assert ts.is_missing == True
 
     with pytest.raises(FMTimestampError):
         FMTimestamp("foobar")
@@ -89,3 +93,22 @@ def test_init_with_start_and_end_dates():
     assert ts.start_timestamp.as_str() == "2016-01-01 00:00:00"
     assert ts.stop_timestamp == dt.datetime(2017, 9, 23, 0, 0, 0)
     assert ts.stop_timestamp.as_str() == "2017-09-23 00:00:00"
+
+
+def test_start_and_end_date_can_be_missing():
+    """
+    Start and/or end date can be missing.
+    """
+    ts = TimeSlice.from_dates(start_date=None, end_date="2016-01-04")
+    assert ts.start_timestamp.is_missing == True
+    assert ts.stop_timestamp == dt.datetime(2016, 1, 4, 0, 0, 0)
+    assert ts.stop_timestamp.as_str() == "2016-01-04 00:00:00"
+
+    ts = TimeSlice.from_dates(start_date="2016-01-02", end_date=None)
+    assert ts.start_timestamp == dt.datetime(2016, 1, 2, 0, 0, 0)
+    assert ts.start_timestamp.as_str() == "2016-01-02 00:00:00"
+    assert ts.stop_timestamp.is_missing == True
+
+    ts = TimeSlice.from_dates(start_date=None, end_date=None)
+    assert ts.start_timestamp.is_missing == True
+    assert ts.stop_timestamp.is_missing == True
