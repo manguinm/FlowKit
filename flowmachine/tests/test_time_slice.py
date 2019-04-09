@@ -134,6 +134,8 @@ def test_init_by_parsing_legacy_input():
     assert (
         repr(ts) == "TimeSlice(start='2016-01-01 00:00:00', stop='2017-09-23 00:00:00')"
     )
+    with pytest.raises(ValueError, match="Start and stop are the same."):
+        TimeSlice.from_legacy_input(start="2016-01-04", stop="2016-01-04")
 
 
 def test_start_and_end_date_can_be_missing():

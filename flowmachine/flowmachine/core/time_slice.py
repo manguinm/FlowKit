@@ -98,6 +98,8 @@ class TimeSlice:
             # pass in date/datetime objects in various formats.
             self.start_timestamp = FMTimestamp.from_legacy_input(start)
             self.stop_timestamp = FMTimestamp.from_legacy_input(stop)
+            if self.start_timestamp == self.stop_timestamp:
+                raise ValueError("Start and stop are the same.")
         else:
             self.start_timestamp = FMTimestamp.from_any_input(start)
             self.stop_timestamp = FMTimestamp.from_any_input(stop)
