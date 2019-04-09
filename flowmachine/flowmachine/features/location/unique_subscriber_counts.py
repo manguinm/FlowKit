@@ -104,6 +104,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
         hours="all",
         table="all",
         column_name=None,
+        allow_date_objects_during_refactoring=False,
         **kwargs
     ):
         """
@@ -124,6 +125,7 @@ class UniqueSubscriberCounts(GeoDataMixin, Query):
             hours=self.hours,
             table=self.table,
             column_name=self.column_name,
+            allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
             **kwargs
         )
 

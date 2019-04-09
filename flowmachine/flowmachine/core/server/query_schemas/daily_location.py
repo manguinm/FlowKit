@@ -46,4 +46,5 @@ class DailyLocationExposed(BaseExposedQuery):
             level=self.aggregation_unit,
             method=self.method,
             subscriber_subset=self.subscriber_subset,
+            allow_date_objects_during_refactoring=True,
         )

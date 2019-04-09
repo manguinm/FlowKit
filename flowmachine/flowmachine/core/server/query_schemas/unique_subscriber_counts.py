@@ -41,5 +41,8 @@ class UniqueSubscriberCountsExposed(BaseExposedQuery):
         Query
         """
         return UniqueSubscriberCounts(
-            start=self.start_date, stop=self.end_date, level=self.aggregation_unit
+            start=self.start_date,
+            stop=self.end_date,
+            level=self.aggregation_unit,
+            allow_date_objects_during_refactoring=True,
         )

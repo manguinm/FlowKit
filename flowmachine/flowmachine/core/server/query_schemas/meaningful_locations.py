@@ -61,11 +61,13 @@ def _make_meaningful_locations_object(
     tower_day_of_week_scores,
     tower_hour_of_day_scores,
 ):
+    allow_date_objects_during_refactoring = True
     q_subscriber_locations = subscriber_locations(
         start=start_date,
         stop=stop_date,
         level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
         subscriber_subset=subscriber_subset,
+        allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
     )
     q_call_days = CallDays(subscriber_locations=q_subscriber_locations)
     q_hartigan_cluster = HartiganCluster(
@@ -81,6 +83,7 @@ def _make_meaningful_locations_object(
         score_dow=tower_day_of_week_scores,
         level="versioned-site",  # note this 'level' is not the same as the exposed parameter 'aggregation_unit'
         subscriber_subset=subscriber_subset,
+        allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
     )
     q_meaningful_locations = MeaningfulLocations(
         clusters=q_hartigan_cluster, labels=labels, scores=q_event_score, label=label

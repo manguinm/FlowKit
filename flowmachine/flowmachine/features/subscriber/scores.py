@@ -147,6 +147,7 @@ class EventScore(Query):
         subscriber_subset=None,
         polygon_table=None,
         size=None,
+        allow_date_objects_during_refactoring=False,
     ):
         if set(score_dow.keys()) != {
             "monday",
@@ -185,6 +186,7 @@ class EventScore(Query):
                 hours=self.hours,
                 subscriber_subset=subscriber_subset,
                 subscriber_identifier=self.subscriber_identifier,
+                allow_date_objects_during_refactoring=allow_date_objects_during_refactoring,
             ),
             level=self.level,
             time_col="datetime",
