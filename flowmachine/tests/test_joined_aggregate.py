@@ -83,7 +83,7 @@ def test_joined_agg_hours_mismatch():
     """
     Test that join aggregate with mismatched hours doesn't warn.
     """
-    mfl = MostFrequentLocation("2016-01-01 10:00", "2016-01-04", level="admin3")
+    mfl = MostFrequentLocation("2016-01-01 10:00:00", "2016-01-04", level="admin3")
     with warnings.catch_warnings(record=True) as w:
         mfl.join_aggregate(RadiusOfGyration("2016-01-01", "2016-01-04"))
         assert not w
