@@ -14,7 +14,7 @@ from flowmachine.core.errors import MissingDateError
 from flowmachine.features.utilities.event_table_subset import EventTableSubset
 
 
-def test_error_on_start_is_stop(get_dataframe):
+def test_error_on_start_is_stop():
     """Test that a value error is raised when start == stop"""
     with pytest.raises(ValueError):
         EventTableSubset("2016-01-01", "2016-01-01")
@@ -150,7 +150,7 @@ def test_default_dates(get_dataframe):
     assert maximum.timestamp() < max_comparison.timestamp()
 
 
-def test_explain(get_dataframe):
+def test_explain():
     """
     EventTableSubset().explain() method returns a string
     """
@@ -161,7 +161,7 @@ def test_explain(get_dataframe):
     assert isinstance(sd.explain(analyse=True), str)
 
 
-def test_avoids_searching_extra_tables(get_dataframe):
+def test_avoids_searching_extra_tables():
     """
     EventTableSubset() query doesn't look in additional partitioned tables.
     """
