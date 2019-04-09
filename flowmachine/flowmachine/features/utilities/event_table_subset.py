@@ -19,6 +19,7 @@ from ...core.sqlalchemy_utils import (
 )
 from flowmachine.utils import list_of_dates
 from flowmachine.core.subscriber_subsetter import make_subscriber_subsetter
+from flowmachine.core.time_slice import TimeSlice
 
 import structlog
 
@@ -74,12 +75,21 @@ class EventTableSubset(Query):
         start=None,
         stop=None,
         *,
+        time_slice=None,
         hours="all",
         table="events.calls",
         subscriber_subset=None,
         columns=["*"],
         subscriber_identifier="msisdn",
     ):
+
+        if time_slice is None and start is None and stop is None:
+            raise ValueError("Either `time_slice` or `start`/`stop` must be specified.")
+        if time_slice is None:
+            self.time_slice = TimeSlice.from_legacy_input(start=start, stop=stop)
+        else:
+            assert isinstance(time_slice, TimeSlice)
+            self.time_slice = time_slice
 
         # Temporary band-aid; marshmallow deserialises date strings
         # to date objects, so we convert it back here because the
