@@ -78,9 +78,15 @@ services:
       - API_PASSWORD=${API_PASSWORD:-foo}
       - CACHE_SIZE=${CACHE_SIZE:-""}  # if empty, defaults to using 10% of the available disk space
       - CACHE_HALF_LIFE=${CACHE_HALF_LIFE:-1000}
-      - N_DAYS=${N_DAYS:-7}
-      - N_CELLS=${N_CELLS:-500}
-      - N_CALLS=${N_CALLS:-2000}
+      - N_DAYS=${N_DAYS:-60}
+      - N_SITES=200
+      - N_SUBSCRIBERS=50000
+      - N_CELLS=${N_CELLS:-1000}
+      - N_CALLS=${N_CALLS:-20000}
+      - N_SMS=20000
+      - N_MDS=20000
+      - DISASTER_START=2016-02-11
+      - DISASTER_END=2016-03-01
     shm_size: 1G
     tty: true
     stdin_open: true
@@ -127,7 +133,7 @@ services:
     ports:
       - ${FLOWAPI_PORT:-9090}:9090
     environment:
-      - SERVER=flowmachine
+      - FLOWMACHINE_SERVER=flowmachine
       - FLOWDB_USER=reporter
       - FLOWDB_PASS=${REPORTER_PASSWORD:-foo}
       - FLOWDB_HOST=${FLOWDB_HOST:-flowdb}
